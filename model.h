@@ -1,32 +1,25 @@
 #ifndef MODEL_H
 #define MODEL_H
-#include <QWidget>
-#include <QList>
-#include <QString>
-#include "Frame.h"
-#include <QGraphicsScene>
 
+#include <QObject>
+#include <QImage>
+#include <QColor>
 
-class Model: public QObject{
+class Model : public QObject {
+    Q_OBJECT
+
 public:
-    Model(QObject *parent = nullptr);
-    ~Model();
-    void drawPixel(int x, int y, const QColor &color);
-    int getXSize();
-    int getYSize();
-
-public slots:
-    void mouseClicked(int x, int y);
-
+    explicit Model(int width, int height, QObject *parent = nullptr);
+    void setPixel(int x, int y, const QColor &color);
+    QColor getPixel(int x, int y) const;
+    const QImage& getCanvasImage() const;
+    void clearImage();
 
 signals:
-
-
+    void imageChanged();
 
 private:
-    QList<Frame> frames;
-    int nowediting;
-
+    QImage canvasImage;
 };
 
-#endif // SPRITEFRAMEMODEL_H
+#endif // MODEL_H

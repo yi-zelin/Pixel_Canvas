@@ -3,27 +3,50 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-
-{
+    , ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    model = new Model(); //
-    connect(ui->MainCanvas, &CustomGraphicsView::mouseClicked, this, &MainWindow::handleMouseClicked);
 
+    // 创建和初始化模型，大小为50x50像素
+    model = new Model(1000  , 1000, this);
 
+    // 创建和初始化像素编辑器视图，将模型传递给它
+    pixelEditorView = new PixelEditorView(model, this);
 
+    // 设置像素编辑器视图为中心组件
+    setCentralWidget(pixelEditorView);
+
+    // 设置UI，例如创建动作和菜单
+    setupUI();
+    createActions();
+    createMenus();
+    createToolbars();
+
+    // 连接信号和槽
+    connectSignalsSlots();
 }
 
-void MainWindow::handleMouseClicked(int x, int y) {
-    // Assuming pixelSize is accessible here, or you need to adjust coordinates based on your scene scale
-    model->drawPixel(x / model->getXSize(), y / model->getYSize(), Qt::black); // Or use a selected color
-}
-
-
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
-    delete model;
+    // 注意: Model 和 PixelEditorView 的析构在 Qt 的父子关系管理下自动处理
 }
 
+void MainWindow::setupUI() {
+    // 初始化窗口的其他UI部分，如状态栏和停靠窗口
+}
 
+void MainWindow::createActions() {
+    // 创建与用户交互相关的动作
+}
+
+void MainWindow::createMenus() {
+    // 创建菜单
+}
+
+void MainWindow::createToolbars() {
+    // 创建工具栏
+}
+
+void MainWindow::connectSignalsSlots() {
+    // 连接模型的信号到视图的槽，以便图像变更时更新视图
+    connect(model, &Model::imageChanged, pixelEditorView, static_cast<void (QWidget::*)()>(&QWidget::update));
+}

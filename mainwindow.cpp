@@ -8,7 +8,7 @@ MainWindow::MainWindow( Model *model ,QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(model, &Model::gameStarted, this, &MainWindow::onGameStarted);
+    //onnect(model, &Model::gameStarted, this, &MainWindow::onGameStarted);
 
 
 

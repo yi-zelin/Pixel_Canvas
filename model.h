@@ -3,9 +3,6 @@
 
 #include <QList>
 #include <QString>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonDocument>
 #include "canvas.h"
 
 

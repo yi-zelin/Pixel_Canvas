@@ -13,7 +13,6 @@ public:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;  // 如果需要处理鼠标事件
 
-    // 添加其他必要的函数，比如更新画布等
 
 private:
     Canvas canvas;  // Canvas对象实例

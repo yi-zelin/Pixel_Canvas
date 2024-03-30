@@ -1,6 +1,7 @@
 #ifndef CANVASWIDGET_H
 #define CANVASWIDGET_H
-
+#include <QPainter>
+#include <QMouseEvent>
 #include <QWidget>
 #include "Canvas.h"  // 确保你包含了之前创建的Canvas类
 

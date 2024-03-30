@@ -1,6 +1,6 @@
 #ifndef CANVAS_H
 #define CANVAS_H
-
+#include <QImage>
 #include <vector>
 #include <QString>
 #include <QJsonObject>
@@ -24,7 +24,9 @@ public:
     QString exportToJson() const;
     void importFromJson(const QString& jsonStr);
     int getWidth();
-    int getHight();
+    int getHeight();
+    //这个方法遍历Canvas上的所有像素，并将它们绘制到一个QImage对象上。
+    void drawToImage(QImage &image) const;
 
 private:
     int width, height;

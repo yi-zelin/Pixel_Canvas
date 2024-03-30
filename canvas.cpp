@@ -13,7 +13,7 @@ int Canvas::getWidth(){
 }
 
 
-int Canvas::getHight(){
+int Canvas::getHeight(){
     return pixels.size();
 }
 
@@ -29,6 +29,15 @@ Pixel Canvas::getPixel(int x, int y) const {
         return pixels[y][x];
     }
     return Pixel(); // 返回一个默认Pixel对象，可能需要更合理的错误处理
+}
+
+void Canvas::drawToImage(QImage &image) const {
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            Pixel pixel = getPixel(x, y);
+            image.setPixelColor(x, y, QColor(pixel.getR(), pixel.getG(), pixel.getB()));
+        }
+    }
 }
 
 void Canvas::undo() {

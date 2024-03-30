@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     canvas.cpp \
     canvaswidget.cpp \
+    frame.cpp \
     imagecollection.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 HEADERS += \
     canvas.h \
     canvaswidget.h \
+    frame.h \
     imagecollection.h \
     mainwindow.h \
     pixel.h

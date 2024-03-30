@@ -11,18 +11,34 @@ PixelEditorView::PixelEditorView(Model *model, QWidget *parent)
 
 void PixelEditorView::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    painter.drawImage(0, 0, model->getCanvasImage());
+    const QImage &image = model->getCanvasImage();
+    const int pixelSize = 4; // 实际的放大倍数
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRect rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+            painter.fillRect(rect, QColor(image.pixel(x, y)));
+        }
+    }
 }
 
 void PixelEditorView::mousePressEvent(QMouseEvent *event) {
-    model->setPixel(event->x(), event->y(), currentColor);
-    update(); // 重绘组件
+    // 假设 scaleFactor 是您用于放大图像的倍数
+    int scaleFactor = 4;
+    // 将鼠标坐标转换为画布上的像素坐标
+    int pixelX = event->x() / scaleFactor;
+    int pixelY = event->y() / scaleFactor;
+    // 设置模型中相应像素的颜色
+    model->setPixel(pixelX, pixelY, currentColor);
+    update();
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() & Qt::LeftButton) {
-        model->setPixel(event->x(), event->y(), currentColor);
-        update(); // 重绘组件
+        int scaleFactor = 4;
+        int pixelX = event->x() / scaleFactor;
+        int pixelY = event->y() / scaleFactor;
+        model->setPixel(pixelX, pixelY, currentColor);
+        update();
     }
 }
 

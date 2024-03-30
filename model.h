@@ -8,7 +8,7 @@
 
 class Model: public QObject{
 public:
-    Model(QWidget *parent = nullptr);
+    Model(QObject *parent = nullptr);
     ~Model();
 
 

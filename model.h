@@ -1,12 +1,12 @@
 #ifndef MODEL_H
 #define MODEL_H
-
+#include <QWidget>
 #include <QList>
 #include <QString>
 
 
 
-class Model {
+class Model: public QObject{
 public:
     Model(QWidget *parent = nullptr);
     ~Model();

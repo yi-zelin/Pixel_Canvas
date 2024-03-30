@@ -10,6 +10,8 @@ class Model: public QObject{
 public:
     Model(QWidget *parent = nullptr);
     ~Model();
+
+
 public slots:
     void mouseClicked(int x, int y);
 

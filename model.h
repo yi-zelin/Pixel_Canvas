@@ -8,7 +8,7 @@
 
 class Model {
 public:
-    Model();
+    Model(QWidget *parent = nullptr);
     ~Model();
 public slots:
     void mouseClicked(int x, int y);

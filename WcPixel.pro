@@ -14,6 +14,7 @@ SOURCES += \
     frame.cpp \
     main.cpp \
     mainwindow.cpp \
+    model.cpp \
     pixel.cpp
 
 HEADERS += \
@@ -21,6 +22,7 @@ HEADERS += \
     canvaswidget.h \
     frame.h \
     mainwindow.h \
+    model.h \
     pixel.h
 
 FORMS += \

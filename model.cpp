@@ -1,4 +1,4 @@
-#include "model.h"
+#include "Model.h"
 
 Model::Model() {
 }
@@ -6,8 +6,8 @@ Model::Model() {
 Model::~Model() {
 }
 
-void Model::addFrame(const QString& framePath) {
-    frames.append(framePath);
+void Model::addFrame(const Canvas& frame) {
+    frames.append(frame);
 }
 
 void Model::removeFrame(int index) {
@@ -16,36 +16,16 @@ void Model::removeFrame(int index) {
     }
 }
 
-QString Model::getFrame(int index) const {
+Canvas Model::getFrame(int index) const {
     if (index >= 0 && index < frames.size()) {
-        return frames[index];
+        return frames.at(index);
     }
-    return QString();
+    // 如果索引无效，返回一个默认构造的Canvas对象
+    return Canvas(0, 0); // 注意：你可能需要确保Canvas有一个默认构造函数或这里提供合适的参数
 }
 
 int Model::frameCount() const {
     return frames.size();
 }
 
-QString Model::exportToJson() const {
-    QJsonArray framesArray;
-    for (const auto& framePath : frames) {
-        framesArray.append(framePath);
-    }
 
-    QJsonObject rootObj;
-    rootObj["frames"] = framesArray;
-    QJsonDocument doc(rootObj);
-    return QString(doc.toJson(QJsonDocument::Compact));
-}
-
-void Model::importFromJson(const QString& jsonStr) {
-    QJsonDocument doc = QJsonDocument::fromJson(jsonStr.toUtf8());
-    QJsonObject rootObj = doc.object();
-    QJsonArray framesArray = rootObj["frames"].toArray();
-
-    frames.clear();
-    for (int i = 0; i < framesArray.size(); ++i) {
-        frames.append(framesArray[i].toString());
-    }
-}

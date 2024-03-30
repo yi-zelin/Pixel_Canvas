@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 {
     ui->setupUi(this);
-    model = new Model(); // For example, a 64x64 frame
+    model = new Model(); //
     connect(ui->MainCanvas, &CustomGraphicsView::mouseClicked, this, &MainWindow::handleMouseClicked);
 
 

@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QMovie>
 #include <QDebug>
-#include "customgraphicsview.h"
+
 #include "model.h"
 
 

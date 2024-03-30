@@ -10,7 +10,6 @@ CONFIG += c++17
 
 SOURCES += \
     canvas.cpp \
-    canvaswidget.cpp \
     frame.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -19,7 +18,6 @@ SOURCES += \
 
 HEADERS += \
     canvas.h \
-    canvaswidget.h \
     frame.h \
     mainwindow.h \
     model.h \

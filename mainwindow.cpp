@@ -8,8 +8,6 @@ MainWindow::MainWindow( Model *model ,QWidget *parent)
 {
     ui->setupUi(this);
 
-    //onnect(model, &Model::gameStarted, this, &MainWindow::onGameStarted);
-
 
 
 }

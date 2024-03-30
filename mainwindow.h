@@ -1,8 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "model.h"
 #include <QMainWindow>
+#include <QLabel>
+#include <QMovie>
+#include <QDebug>
+#include "customgraphicsview.h"
+#include "model.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,9 +27,11 @@ public:
 public slots:
 
 
+private slots:
+    void handleMouseClicked(int x, int y);
 
 private:
     Ui::MainWindow *ui;
-    Model *allModel;
+    Model *model;
 };
 #endif // MAINWINDOW_H

@@ -3,7 +3,8 @@
 #include <QWidget>
 #include <QList>
 #include <QString>
-
+#include "Frame.h"
+#include <QGraphicsScene>
 
 
 class Model: public QObject{

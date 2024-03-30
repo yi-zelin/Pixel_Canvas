@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::handleMouseClicked(int x, int y) {
     // Assuming pixelSize is accessible here, or you need to adjust coordinates based on your scene scale
-    model->drawPixel(x / model->pixelSize, y / model->pixelSize, Qt::black); // Or use a selected color
+    model->drawPixel(x / model->getXSize(), y / model->getYSize(), Qt::black); // Or use a selected color
 }
 
 

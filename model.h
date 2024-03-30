@@ -12,6 +12,8 @@ public:
     Model(QObject *parent = nullptr);
     ~Model();
     void drawPixel(int x, int y, const QColor &color);
+    int getXSize();
+    int getYSize();
 
 public slots:
     void mouseClicked(int x, int y);
@@ -24,6 +26,7 @@ signals:
 private:
     QList<Frame> frames;
     int nowediting;
+
 };
 
 #endif // SPRITEFRAMEMODEL_H

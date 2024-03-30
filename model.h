@@ -12,6 +12,8 @@ public:
     ~Model();
 public slots:
     void mouseClicked(int x, int y);
+
+
 signals:
 
 

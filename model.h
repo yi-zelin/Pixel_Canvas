@@ -4,7 +4,7 @@
 #include <QList>
 #include <QString>
 #include "canvas.h"
-#include "canvasitem.h"
+
 
 class Model {
 public:
@@ -22,8 +22,8 @@ public:
     void importFromJson(const QString& jsonStr);
 
 signals:
-    void frameAdded(CanvasItem *item);
-    void frameUpdated(int index);
+
+
 
 private:
     //存储用的list

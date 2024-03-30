@@ -18,6 +18,11 @@ public:
     MainWindow(Model *model, QWidget *parent = nullptr );
     ~MainWindow();
 
+
+public slots:
+
+
+
 private:
     Ui::MainWindow *ui;
     Model *allModel;

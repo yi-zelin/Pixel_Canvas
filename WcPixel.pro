@@ -10,8 +10,6 @@ CONFIG += c++17
 
 SOURCES += \
     canvas.cpp \
-    canvasitem.cpp \
-    frame.cpp \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
@@ -19,8 +17,6 @@ SOURCES += \
 
 HEADERS += \
     canvas.h \
-    canvasitem.h \
-    frame.h \
     mainwindow.h \
     model.h \
     pixel.h

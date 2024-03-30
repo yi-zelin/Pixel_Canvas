@@ -1,4 +1,4 @@
-#include "Canvas.h"
+#include "canvas.h"
 
 Canvas::Canvas(int width, int height) : width(width), height(height) {
     pixels = std::vector<std::vector<Pixel>>(height, std::vector<Pixel>(width, Pixel()));

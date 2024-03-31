@@ -3,7 +3,7 @@
 #include <QMouseEvent> // 添加这行
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent)
-    : QWidget(parent), model(model), currentColor(Qt::black), scale(16),lastPixelX(-1), lastPixelY(-1) {
+    : QWidget(parent), model(model), currentColor(Qt::black), scale(64),lastPixelX(-1), lastPixelY(-1) {
     // 设置适当的大小策略
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
@@ -21,6 +21,7 @@ void PixelEditorView::paintEvent(QPaintEvent *event) {
 }
 
 void PixelEditorView::mousePressEvent(QMouseEvent *event) {
+    currentStroke = new Stroke(currentColor);
     int pixelX = event->x() / scale;
     int pixelY = event->y() / scale;
     model->setPixel(pixelX, pixelY, currentColor);
@@ -30,12 +31,6 @@ void PixelEditorView::mousePressEvent(QMouseEvent *event) {
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
-    // if (event->buttons() & Qt::LeftButton) {
-    //     int pixelX = event->x() / scale;
-    //     int pixelY = event->y() / scale;
-    //     model->setPixel(pixelX, pixelY, currentColor);
-    //     update();
-    // }
     if (event->buttons() & Qt::LeftButton) {
         int currentPixelX = event->x() / scale;
         int currentPixelY = event->y() / scale;
@@ -47,9 +42,10 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
         steps = std::max(steps, 1); // Ensure steps is never zero
 
         for (int i = 0; i <= steps; ++i) {
-            int interpolatedX = lastPixelX + (deltaX * i) / steps;
-            int interpolatedY = lastPixelY + (deltaY * i) / steps;
-            model->setPixel(interpolatedX, interpolatedY, currentColor);
+            int pointX = lastPixelX + (deltaX * i) / steps;
+            int pointY = lastPixelY + (deltaY * i) / steps;
+            model->setPixel(pointX, pointY, currentColor);
+            currentStroke->points->push_back({pointX,pointY});
         }
 
         update();
@@ -59,6 +55,34 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
         lastPixelY = currentPixelY;
     }
 }
+
+void PixelEditorView::undoClicked(){
+    if (!undoList.empty()){
+        redoList.push(undoList.top());
+        undoList.pop();
+        // TODO: REDRAW
+    }
+}
+
+void PixelEditorView::redoClicked(){
+    if (!redoList.empty()){
+        undoList.push(redoList.top());
+        redoList.pop();
+        // TODO: REDRAW
+    }
+}
+
+void PixelEditorView::reDraw(){
+    // if change backGround color, also change here
+    model->canvasImage.fill(Qt::white);
+}
+
+
+void PixelEditorView::mouseReleaseEvent(QMouseEvent *event) {
+    undoList.push(currentStroke);
+    redoList=stack<Stroke*>();
+}
+
 
 PixelEditorView::~PixelEditorView() {
     // 进行必要的清理工作

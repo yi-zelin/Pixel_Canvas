@@ -31,6 +31,7 @@ void PixelEditorView::resizeEvent(QResizeEvent *event) {
 }
 
 void PixelEditorView::mousePressEvent(QMouseEvent *event) {
+    currentStroke = new Stroke(currentColor);
     int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
     int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
 
@@ -69,6 +70,7 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
                     interpolatedY >= 0 && interpolatedY < model->getCanvasImage().height()) {
                     model->setPixel(interpolatedX, interpolatedY, currentColor);
                 }
+                currentStroke->points->push_back({interpolatedX,interpolatedY});
             }
 
             update();
@@ -76,6 +78,37 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
             // Update the last pixel position
             lastPixelX = currentPixelX;
             lastPixelY = currentPixelY;
+        }
+    }
+}
+
+void PixelEditorView::undoClicked(){
+    if (!undoList.empty()){
+        redoList.push_back(undoList.back());
+        undoList.pop_back();
+        reDraw();
+    }
+}
+
+void PixelEditorView::redoClicked(){
+    if (!redoList.empty()){
+        undoList.push_back(redoList.back());
+        redoList.pop_back();
+        reDraw();
+    }
+}
+
+void PixelEditorView::reDraw(){
+    model->canvasImage.fill(Qt::white);
+    for(auto stroke: undoList)
+    {
+        auto color = stroke->color;
+        auto points = stroke->points;
+        for(auto point: *points)
+        {
+            int x = point.first;
+            int y = point.second;
+            model->setPixel(x, y, currentColor);
         }
     }
 }

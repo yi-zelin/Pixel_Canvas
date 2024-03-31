@@ -2,24 +2,21 @@
 #define MODEL_H
 
 #include <QObject>
-#include <QImage>
 #include <QColor>
+#include <QList>
+#include "PixelItem.h"
 
 class Model : public QObject {
     Q_OBJECT
 
 public:
-    explicit Model(int width, int height, QObject *parent = nullptr);
-    void setPixel(int x, int y, const QColor &color);
-    QColor getPixel(int x, int y) const;
-    const QImage& getCanvasImage() const;
-    void clearImage();
+    Model(QObject *parent = nullptr);
 
-signals:
-    void imageChanged();
+    void createPixelItems(int width, int height);
+    QList<PixelItem *> getPixelItems() const;
 
 private:
-    QImage canvasImage;
+    QList<PixelItem *> pixelItems;
 };
 
 #endif // MODEL_H

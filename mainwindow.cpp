@@ -1,33 +1,40 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "PixelItem.h"
+#include <QGraphicsScene>
+#include <QGraphicsView>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
     ui->setupUi(this);
 
-    // 创建和初始化模型，大小为50x50像素
-    model = new Model(1000  , 1000, this);
+    // 创建一个 QGraphicsScene
+    QGraphicsScene *scene = new QGraphicsScene(this);
 
-    // 创建和初始化像素编辑器视图，将模型传递给它
-    pixelEditorView = new PixelEditorView(model, this);
+    const int pixelSize = 8;
+    const int gridSize = 100;
+    scene->setSceneRect(0, 0, gridSize * pixelSize, gridSize * pixelSize); // 设置画布大小
 
-    // 设置像素编辑器视图为中心组件
-    setCentralWidget(pixelEditorView);
+    // 创建像素项并添加到场景中
+    for (int i = 0; i < gridSize; ++i) {
+        for (int j = 0; j < gridSize; ++j) {
+            QColor color = ((i + j) % 2 == 0) ? Qt::gray : Qt::white; // 棋盘效果
+            PixelItem *item = new PixelItem(i, j, color, pixelSize);
+            scene->addItem(item);
+        }
+    }
 
-    // 设置UI，例如创建动作和菜单
-    setupUI();
-    createActions();
-    createMenus();
-    createToolbars();
-
-    // 连接信号和槽
-    connectSignalsSlots();
+    // 创建 QGraphicsView 并设置场景
+    QGraphicsView *view = new QGraphicsView(scene, this);
+    view->setRenderHint(QPainter::Antialiasing);
+    setCentralWidget(view); // 将 QGraphicsView 设置为主窗口的中央部件
 }
 
 MainWindow::~MainWindow() {
     delete ui;
-    // 注意: Model 和 PixelEditorView 的析构在 Qt 的父子关系管理下自动处理
+    delete model; // 如果使用了new分配model的内存
 }
 
 void MainWindow::setupUI() {
@@ -48,5 +55,4 @@ void MainWindow::createToolbars() {
 
 void MainWindow::connectSignalsSlots() {
     // 连接模型的信号到视图的槽，以便图像变更时更新视图
-    connect(model, &Model::imageChanged, pixelEditorView, static_cast<void (QWidget::*)()>(&QWidget::update));
 }

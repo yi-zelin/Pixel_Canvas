@@ -3,7 +3,7 @@
 #include <QMouseEvent> // 添加这行
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent)
-    : QWidget(parent), model(model), currentColor(Qt::black) {
+    : QWidget(parent), model(model), currentColor(Qt::black), scale(16),lastPixelX(-1), lastPixelY(-1) {
     // 设置适当的大小策略
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
@@ -12,33 +12,51 @@ PixelEditorView::PixelEditorView(Model *model, QWidget *parent)
 void PixelEditorView::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     const QImage &image = model->getCanvasImage();
-    const int pixelSize = 4; // 实际的放大倍数
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
-            QRect rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+            QRect rect(x * scale, y * scale, scale, scale);
             painter.fillRect(rect, QColor(image.pixel(x, y)));
         }
     }
 }
 
 void PixelEditorView::mousePressEvent(QMouseEvent *event) {
-    // 假设 scaleFactor 是您用于放大图像的倍数
-    int scaleFactor = 4;
-    // 将鼠标坐标转换为画布上的像素坐标
-    int pixelX = event->x() / scaleFactor;
-    int pixelY = event->y() / scaleFactor;
-    // 设置模型中相应像素的颜色
+    int pixelX = event->x() / scale;
+    int pixelY = event->y() / scale;
     model->setPixel(pixelX, pixelY, currentColor);
     update();
+    lastPixelX = pixelX;
+    lastPixelY = pixelY;
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
+    // if (event->buttons() & Qt::LeftButton) {
+    //     int pixelX = event->x() / scale;
+    //     int pixelY = event->y() / scale;
+    //     model->setPixel(pixelX, pixelY, currentColor);
+    //     update();
+    // }
     if (event->buttons() & Qt::LeftButton) {
-        int scaleFactor = 4;
-        int pixelX = event->x() / scaleFactor;
-        int pixelY = event->y() / scaleFactor;
-        model->setPixel(pixelX, pixelY, currentColor);
+        int currentPixelX = event->x() / scale;
+        int currentPixelY = event->y() / scale;
+
+        // Interpolate between the previous and current pixel positions
+        int deltaX = currentPixelX - lastPixelX;
+        int deltaY = currentPixelY - lastPixelY;
+        int steps = std::max(abs(deltaX), abs(deltaY));
+        steps = std::max(steps, 1); // Ensure steps is never zero
+
+        for (int i = 0; i <= steps; ++i) {
+            int interpolatedX = lastPixelX + (deltaX * i) / steps;
+            int interpolatedY = lastPixelY + (deltaY * i) / steps;
+            model->setPixel(interpolatedX, interpolatedY, currentColor);
+        }
+
         update();
+
+        // Update the last pixel position
+        lastPixelX = currentPixelX;
+        lastPixelY = currentPixelY;
     }
 }
 

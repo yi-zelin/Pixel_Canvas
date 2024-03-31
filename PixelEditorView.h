@@ -21,6 +21,9 @@ protected:
 private:
     Model *model;
     QColor currentColor;
+    int scale;
+    int lastPixelX;
+    int lastPixelY;
 };
 
 #endif // PIXELEDITORVIEW_H

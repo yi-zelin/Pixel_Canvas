@@ -1,22 +1,29 @@
-#include "Model.h"
+#include "model.h"
 
-Model::Model(QObject *parent) : QObject(parent) {
-    // 初始化Model时的操作
+Model::Model(int width, int height, QObject *parent)
+    : QObject(parent), canvasImage(width, height, QImage::Format_ARGB32_Premultiplied) {
+    canvasImage.fill(Qt::white); // 初始化为白色或透明背景
 }
 
-// void Model::createPixelItems(int width, int height) {
-//     scene->setSceneRect(0, 0, 100, 100); // 设置画布大小
+void Model::setPixel(int x, int y, const QColor &color) {
+    if (x >= 0 && x < canvasImage.width() && y >= 0 && y < canvasImage.height()) {
+        canvasImage.setPixelColor(x, y, color);
+        emit imageChanged(); // 发出图像更改的信号
+    }
+}
 
-//     // 创建棋盘格样式的像素项并添加到场景中
-//     for (int i = 0; i < 100; ++i) {
-//         for (int j = 0; j < 100; ++j) {
-//             QColor color = ((i + j) % 2 == 0) ? Qt::white : Qt::black;
-//             PixelItem *item = new PixelItem(i, j, color);
-//             scene->addItem(item);
-//         }
-//     }
-// }
+QColor Model::getPixel(int x, int y) const {
+    if (x >= 0 && x < canvasImage.width() && y >= 0 && y < canvasImage.height()) {
+        return canvasImage.pixelColor(x, y);
+    }
+    return QColor(); // 如果坐标无效，返回默认颜色
+}
 
-QList<PixelItem *> Model::getPixelItems() const {
-    return pixelItems;
+const QImage& Model::getCanvasImage() const {
+    return canvasImage;
+}
+
+void Model::clearImage() {
+    canvasImage.fill(Qt::white); // 或使用适当的背景颜色填充
+    emit imageChanged(); // 发出图像更改的信号
 }

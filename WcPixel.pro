@@ -9,19 +9,19 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    PixelEditorView.cpp \
     frame.cpp \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
-    pixelitem.cpp \
-    stroke.cpp
+    toolbox.cpp
 
 HEADERS += \
+    PixelEditorView.h \
     frame.h \
     mainwindow.h \
     model.h \
-    pixelitem.h \
-    stroke.h
+    toolbox.h
 
 FORMS += \
     mainwindow.ui
@@ -30,3 +30,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Resources.qrc

@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDockWidget>
 #include <QMainWindow>
 #include "PixelEditorView.h"
 #include "Model.h"
-
+#include "toolBox.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -18,8 +19,10 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    PixelEditorView *pixelEditorView; // 自定义的像素编辑器视图
-    Model *model; // 管理像素数据的模型
+    PixelEditorView *pixelEditorView;
+    Toolbox *tool;
+    Model *model;
+    QDockWidget *toolboxDock;
 
     // UI相关的函数，如创建菜单、工具栏、状态栏等
     void setupUI();

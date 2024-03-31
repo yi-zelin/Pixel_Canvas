@@ -10,9 +10,11 @@ class PixelEditorView : public QWidget {
     Q_OBJECT
 
 public:
-    explicit PixelEditorView(Model *model, QWidget *parent = nullptr);
-
+    explicit PixelEditorView(Model *model, QWidget *parent = nullptr,QColor *currentColor =new QColor(Qt::white));
     ~PixelEditorView() override;
+
+public slots:
+    void setEraserMode(bool active);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -24,7 +26,7 @@ protected:
 
 private:
     Model *model;
-    QColor currentColor;
+    QColor *currentColor;
     vector<Stroke*> undoList;
     vector<Stroke*> redoList;
     Stroke *currentStroke;

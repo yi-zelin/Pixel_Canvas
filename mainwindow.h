@@ -23,6 +23,7 @@ private:
     Toolbox *tool;
     Model *model;
     QDockWidget *toolboxDock;
+    QColor *currentColor;
 
     // UI相关的函数，如创建菜单、工具栏、状态栏等
     void setupUI();

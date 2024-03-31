@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     model = new Model(50, 50, this);
 
     // 创建和初始化像素编辑器视图，将模型传递给它
-    pixelEditorView = new PixelEditorView(model, this);
+    pixelEditorView = new PixelEditorView(model, this,currentColor);
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);
@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 连接信号和槽
     connectSignalsSlots();
+        connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
 }
 
 MainWindow::~MainWindow() {

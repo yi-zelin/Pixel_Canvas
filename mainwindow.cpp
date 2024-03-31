@@ -5,12 +5,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow) {
     ui->setupUi(this);
-
     // 创建和初始化模型，大小为50x50像素
     model = new Model(50, 50, this);
-
     // 创建和初始化像素编辑器视图，将模型传递给它
-    pixelEditorView = new PixelEditorView(model, this);
+    pixelEditorView = new PixelEditorView(model, this,currentColor);
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);
@@ -28,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 连接信号和槽
     connectSignalsSlots();
+
+    connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
+
 }
 
 MainWindow::~MainWindow() {
@@ -55,3 +56,4 @@ void MainWindow::connectSignalsSlots() {
     // 连接模型的信号到视图的槽，以便图像变更时更新视图
     connect(model, &Model::imageChanged, pixelEditorView, static_cast<void (QWidget::*)()>(&QWidget::update));
 }
+

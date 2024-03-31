@@ -27,3 +27,4 @@ void Model::clearImage() {
     canvasImage.fill(Qt::white); // 或使用适当的背景颜色填充
     emit imageChanged(); // 发出图像更改的信号
 }
+

@@ -16,6 +16,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+public slots:
 
 private:
     Ui::MainWindow *ui;
@@ -23,13 +24,14 @@ private:
     Toolbox *tool;
     Model *model;
     QDockWidget *toolboxDock;
-
+    QColor *currentColor;
     // UI相关的函数，如创建菜单、工具栏、状态栏等
     void setupUI();
     void createActions();
     void createMenus();
     void createToolbars();
     void connectSignalsSlots();
+    QColor getcolor();
 };
 
 #endif // MAINWINDOW_H

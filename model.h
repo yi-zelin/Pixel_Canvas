@@ -14,7 +14,7 @@ public:
     QColor getPixel(int x, int y) const;
     const QImage& getCanvasImage() const;
     void clearImage();
-
+public slots:
 signals:
     void imageChanged();
 

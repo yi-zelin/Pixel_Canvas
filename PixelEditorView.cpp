@@ -2,8 +2,8 @@
 #include <QPainter>
 #include <QMouseEvent>
 
-PixelEditorView::PixelEditorView(Model *model, QWidget *parent)
-    : QWidget(parent), model(model), currentColor(Qt::black), scale(16),lastPixelX(-1), lastPixelY(-1) {
+PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor *currentColor)
+    : QWidget(parent), model(model),currentColor(currentColor), scale(16),lastPixelX(-1), lastPixelY(-1) {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
 }
@@ -38,7 +38,7 @@ void PixelEditorView::mousePressEvent(QMouseEvent *event) {
     int pixelY = (event->y() - offsetY) / scale;
     if (pixelX >= 0 && pixelX < model->getCanvasImage().width() &&
         pixelY >= 0 && pixelY < model->getCanvasImage().height()) {
-        model->setPixel(pixelX, pixelY, currentColor);
+        model->setPixel(pixelX, pixelY, *currentColor);
         update();
     }
 
@@ -67,7 +67,7 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
                 int interpolatedY = lastPixelY + (deltaY * i) / steps;
                 if (interpolatedX >= 0 && interpolatedX < model->getCanvasImage().width() &&
                     interpolatedY >= 0 && interpolatedY < model->getCanvasImage().height()) {
-                    model->setPixel(interpolatedX, interpolatedY, currentColor);
+                    model->setPixel(interpolatedX, interpolatedY, *currentColor);
                 }
             }
 
@@ -82,5 +82,14 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
 
 PixelEditorView::~PixelEditorView() {
 
+}
+void PixelEditorView::setEraserMode(bool active) {
+    if(active) {
+        // Set the eraser color (usually the background color, e.g., white)
+        *currentColor = Qt::white;
+    } else {
+        // Set back to the previous drawing color or default to black
+        *currentColor = Qt::black; // Or the previous selected color before erasing
+    }
 }
 

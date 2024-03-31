@@ -12,7 +12,8 @@ class Toolbox: public QWidget
     Q_OBJECT
 public:
     explicit Toolbox(Model *model, QWidget *parent = nullptr);
-
+signals:
+    void eraserModeChanged(bool active);
 };
 
 #endif // TOOLBOX_H

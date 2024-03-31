@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     createToolbars();
 
     // 连接信号和槽
-    connectSignalsSlots()
+    connectSignalsSlots();
 
     connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
 

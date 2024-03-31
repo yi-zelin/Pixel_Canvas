@@ -10,7 +10,7 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
     penButton->setCheckable(true); // Optional: make the button checkable
     layout->addWidget(penButton, 0, 0);
     penButton->setMaximumSize(50,50);
-    penButton->setStyleSheet("QToolButton { icon-size: 50px 50px; background-color: white; }");
+    penButton->setStyleSheet("QToolButton { icon-size: 40px 40px; background-color: white; }");
 
     // Eraser tool button
     QToolButton *eraserButton = new QToolButton(this);
@@ -18,7 +18,7 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
     eraserButton->setCheckable(true); // Optional: make the button checkable
     layout->addWidget(eraserButton, 0, 1);
     eraserButton->setMaximumSize(50,50);
-    eraserButton->setStyleSheet("QToolButton { icon-size: 50px 50px; background-color: white; }");
+    eraserButton->setStyleSheet("QToolButton { icon-size: 40px 40px; background-color: white; }");
 
     QToolButton *color = new QToolButton(this);
     color->setIcon(QIcon(":/new/icons/images.png")); // Adjust the path to your icon

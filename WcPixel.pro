@@ -15,6 +15,7 @@ SOURCES += \
     mainwindow.cpp \
     model.cpp \
     stroke.cpp
+    toolbox.cpp
 
 HEADERS += \
     PixelEditorView.h \
@@ -22,6 +23,7 @@ HEADERS += \
     mainwindow.h \
     model.h \
     stroke.h
+    toolbox.h
 
 FORMS += \
     mainwindow.ui
@@ -30,3 +32,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Resources.qrc

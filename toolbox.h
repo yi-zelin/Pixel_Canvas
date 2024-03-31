@@ -2,12 +2,17 @@
 #define TOOLBOX_H
 
 #include <QWidget>
+#include "Model.h"
+#include <QVBoxLayout>
+#include <QToolButton>
+#include <QIcon>
 
-class toolBox
+class Toolbox: public QWidget
 {
-    OBJECT
+    Q_OBJECT
 public:
-    toolBox();
+    explicit Toolbox(Model *model, QWidget *parent = nullptr);
+
 };
 
 #endif // TOOLBOX_H

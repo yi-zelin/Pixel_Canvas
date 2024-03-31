@@ -1,58 +1,82 @@
 #include "PixelEditorView.h"
 #include <QPainter>
-#include <QMouseEvent> // 添加这行
+#include <QMouseEvent>
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent)
-    : QWidget(parent), model(model), currentColor(Qt::black), scale(64),lastPixelX(-1), lastPixelY(-1) {
-    // 设置适当的大小策略
+    : QWidget(parent), model(model), currentColor(Qt::black), scale(16),lastPixelX(-1), lastPixelY(-1) {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
 }
 
 void PixelEditorView::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
     QPainter painter(this);
     const QImage &image = model->getCanvasImage();
+
+    // Calculate the top-left position to center the canvas
+    int offsetX = (width() - image.width() * scale) / 2;
+    int offsetY = (height() - image.height() * scale) / 2;
+
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
-            QRect rect(x * scale, y * scale, scale, scale);
+            QRect rect(offsetX + x * scale, offsetY + y * scale, scale, scale);
             painter.fillRect(rect, QColor(image.pixel(x, y)));
         }
     }
 }
 
+void PixelEditorView::resizeEvent(QResizeEvent *event) {
+    Q_UNUSED(event); // Mark the event parameter as unused to avoid compiler warnings
+    update(); // Trigger a repaint to re-center the canvas
+}
+
 void PixelEditorView::mousePressEvent(QMouseEvent *event) {
-    currentStroke = new Stroke(currentColor);
-    int pixelX = event->x() / scale;
-    int pixelY = event->y() / scale;
-    model->setPixel(pixelX, pixelY, currentColor);
-    update();
+    int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
+    int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
+
+    int pixelX = (event->x() - offsetX) / scale;
+    int pixelY = (event->y() - offsetY) / scale;
+    if (pixelX >= 0 && pixelX < model->getCanvasImage().width() &&
+        pixelY >= 0 && pixelY < model->getCanvasImage().height()) {
+        model->setPixel(pixelX, pixelY, currentColor);
+        update();
+    }
+
     lastPixelX = pixelX;
     lastPixelY = pixelY;
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons() & Qt::LeftButton) {
-        int currentPixelX = event->x() / scale;
-        int currentPixelY = event->y() / scale;
+        int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
+        int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
 
-        // Interpolate between the previous and current pixel positions
-        int deltaX = currentPixelX - lastPixelX;
-        int deltaY = currentPixelY - lastPixelY;
-        int steps = std::max(abs(deltaX), abs(deltaY));
-        steps = std::max(steps, 1); // Ensure steps is never zero
+        int currentPixelX = (event->x() - offsetX) / scale;
+        int currentPixelY = (event->y() - offsetY) / scale;
 
-        for (int i = 0; i <= steps; ++i) {
-            int pointX = lastPixelX + (deltaX * i) / steps;
-            int pointY = lastPixelY + (deltaY * i) / steps;
-            model->setPixel(pointX, pointY, currentColor);
-            currentStroke->points->push_back({pointX,pointY});
+        if (currentPixelX >= 0 && currentPixelX < model->getCanvasImage().width() &&
+            currentPixelY >= 0 && currentPixelY < model->getCanvasImage().height()) {
+            // Interpolate between the previous and current pixel positions
+            int deltaX = currentPixelX - lastPixelX;
+            int deltaY = currentPixelY - lastPixelY;
+            int steps = std::max(abs(deltaX), abs(deltaY));
+            steps = std::max(steps, 1); // Ensure steps is never zero
+
+            for (int i = 0; i <= steps; ++i) {
+                int interpolatedX = lastPixelX + (deltaX * i) / steps;
+                int interpolatedY = lastPixelY + (deltaY * i) / steps;
+                if (interpolatedX >= 0 && interpolatedX < model->getCanvasImage().width() &&
+                    interpolatedY >= 0 && interpolatedY < model->getCanvasImage().height()) {
+                    model->setPixel(interpolatedX, interpolatedY, currentColor);
+                }
+            }
+
+            update();
+
+            // Update the last pixel position
+            lastPixelX = currentPixelX;
+            lastPixelY = currentPixelY;
         }
-
-        update();
-
-        // Update the last pixel position
-        lastPixelX = currentPixelX;
-        lastPixelY = currentPixelY;
     }
 }
 
@@ -85,6 +109,6 @@ void PixelEditorView::mouseReleaseEvent(QMouseEvent *event) {
 
 
 PixelEditorView::~PixelEditorView() {
-    // 进行必要的清理工作
+
 }
 

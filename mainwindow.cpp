@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     // 创建和初始化模型，大小为50x50像素
-    model = new Model(1000  , 1000, this);
+    model = new Model(50, 50, this);
 
     // 创建和初始化像素编辑器视图，将模型传递给它
     pixelEditorView = new PixelEditorView(model, this);

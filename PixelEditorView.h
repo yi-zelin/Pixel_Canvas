@@ -3,7 +3,7 @@
 
 
 #include <QWidget>
-#include "Model.h" // 假设 Model 类包含 QImage 和相关的逻辑
+#include "Model.h"
 
 class PixelEditorView : public QWidget {
     Q_OBJECT
@@ -15,6 +15,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event);
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 

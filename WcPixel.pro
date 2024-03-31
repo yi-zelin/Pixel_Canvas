@@ -13,13 +13,15 @@ SOURCES += \
     frame.cpp \
     main.cpp \
     mainwindow.cpp \
-    model.cpp
+    model.cpp \
+    toolbox.cpp
 
 HEADERS += \
     PixelEditorView.h \
     frame.h \
     mainwindow.h \
-    model.h
+    model.h \
+    toolbox.h
 
 FORMS += \
     mainwindow.ui

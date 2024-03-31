@@ -16,6 +16,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+public slots:
 
 private:
     Ui::MainWindow *ui;
@@ -31,6 +32,7 @@ private:
     void createMenus();
     void createToolbars();
     void connectSignalsSlots();
+    QColor getcolor();
 };
 
 #endif // MAINWINDOW_H

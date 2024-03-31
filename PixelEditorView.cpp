@@ -127,4 +127,13 @@ void PixelEditorView::setEraserMode(bool active) {
 PixelEditorView::~PixelEditorView() {
 
 }
+void PixelEditorView::setEraserMode(bool active) {
+    if(active) {
+        // Set the eraser color (usually the background color, e.g., white)
+        *currentColor = Qt::white;
+    } else {
+        // Set back to the previous drawing color or default to black
+        *currentColor = Qt::black; // Or the previous selected color before erasing
+    }
+}
 

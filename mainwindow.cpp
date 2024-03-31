@@ -11,8 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 创建和初始化像素编辑器视图，将模型传递给它
     pixelEditorView = new PixelEditorView(model, this);
+    tool = new Toolbox(model, this);
+    toolboxDock = new QDockWidget(tr("Tools"), this);
+    toolboxDock->setWidget(tool);
+    toolboxDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
-    // 设置像素编辑器视图为中心组件
+    addDockWidget(Qt::LeftDockWidgetArea, toolboxDock);
+
     setCentralWidget(pixelEditorView);
 
     // 设置UI，例如创建动作和菜单

@@ -3,12 +3,15 @@
 
 #include <QWidget>
 #include "Model.h"
+#include <QVBoxLayout>
+#include <QToolButton>
+#include <QIcon>
 
-class toolBox:QWidget
+class Toolbox: public QWidget
 {
     Q_OBJECT
 public:
-    explicit toolBox(Model *model, QWidget *parent = nullptr);
+    explicit Toolbox(Model *model, QWidget *parent = nullptr);
 
 };
 

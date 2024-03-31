@@ -14,7 +14,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
-    stroke.cpp
     toolbox.cpp
 
 HEADERS += \
@@ -22,7 +21,6 @@ HEADERS += \
     frame.h \
     mainwindow.h \
     model.h \
-    stroke.h
     toolbox.h
 
 FORMS += \

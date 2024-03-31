@@ -14,12 +14,10 @@ public:
     QColor getPixel(int x, int y) const;
     const QImage& getCanvasImage() const;
     void clearImage();
+    QImage canvasImage;
 
 signals:
     void imageChanged();
-
-private:
-    QImage canvasImage;
 };
 
 #endif // MODEL_H

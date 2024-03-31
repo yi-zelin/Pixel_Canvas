@@ -80,6 +80,34 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
     }
 }
 
+void PixelEditorView::undoClicked(){
+    if (!undoList.empty()){
+        redoList.push(undoList.top());
+        undoList.pop();
+        // TODO: REDRAW
+    }
+}
+
+void PixelEditorView::redoClicked(){
+    if (!redoList.empty()){
+        undoList.push(redoList.top());
+        redoList.pop();
+        // TODO: REDRAW
+    }
+}
+
+void PixelEditorView::reDraw(){
+    // if change backGround color, also change here
+    model->canvasImage.fill(Qt::white);
+}
+
+
+void PixelEditorView::mouseReleaseEvent(QMouseEvent *event) {
+    undoList.push(currentStroke);
+    redoList=stack<Stroke*>();
+}
+
+
 PixelEditorView::~PixelEditorView() {
 
 }

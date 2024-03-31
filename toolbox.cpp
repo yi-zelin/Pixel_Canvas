@@ -61,5 +61,8 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
     layout->addWidget(export1, 3, 1);
     export1->setMaximumSize(50,50);
     export1->setStyleSheet("QToolButton { icon-size: 30px 30px; background-color: white; }");
+
     connect(eraserButton, &QToolButton::toggled, this, &Toolbox::eraserModeChanged);
+    connect(redo, &QToolButton::toggled, this, &Toolbox::redoChanged);
+    connect(undo, &QToolButton::toggled, this, &Toolbox::undoChanged);
 }

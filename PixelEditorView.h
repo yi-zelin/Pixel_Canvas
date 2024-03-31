@@ -15,6 +15,8 @@ public:
 
 public slots:
     void setEraserMode(bool active);
+    void setRedo(bool active);
+    void setUndo(bool active);
 
 protected:
     void paintEvent(QPaintEvent *event) override;

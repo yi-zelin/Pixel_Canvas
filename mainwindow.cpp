@@ -28,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     connectSignalsSlots();
 
     connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
-
+    connect(tool, &Toolbox::undoChanged, pixelEditorView, &PixelEditorView::setUndo);
+    connect(tool, &Toolbox::redoChanged, pixelEditorView, &PixelEditorView::setRedo);
 }
 
 MainWindow::~MainWindow() {

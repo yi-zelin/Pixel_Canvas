@@ -123,7 +123,14 @@ void PixelEditorView::setEraserMode(bool active) {
     }
 }
 
-
+void PixelEditorView::setUndo(bool active){
+    if(active)
+        PixelEditorView::undoClicked();
+}
+void PixelEditorView::setRedo(bool active){
+    if(active)
+        PixelEditorView::redoClicked();
+}
 PixelEditorView::~PixelEditorView() {
 
 }

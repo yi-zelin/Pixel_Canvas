@@ -17,12 +17,15 @@ public:
     explicit PixelEditorView(Model *model, QWidget *parent = nullptr,QColor currentColor = QColor(Qt::black),int scale = 16,bool state = true);
     bool isDrawingEnabled;
     QColor previousColor;
+    QColor currentColor;
     bool isEraserMode;
+    bool isFillMode=false;
     ~PixelEditorView() override;
 
 public slots:
     void setEraserMode(bool active);
     void setPenMode(bool active);
+    void setFillMode(bool active);
     void setRedo();
     void setUndo();
     void setCurrentColor(const QColor &color);
@@ -40,7 +43,6 @@ protected:
 
 private:
     Model *model;
-    QColor currentColor;
     vector<Stroke*> undoList;
     vector<Stroke*> redoList;
     Stroke *currentStroke;
@@ -51,6 +53,7 @@ private:
     void saveJsonToFile(const QJsonDocument &document);
     QJsonDocument convertIntoJson(vector<Stroke*> image);
     void loadJsonFromFile(vector<Stroke*> &strokes);
+    void fill(int x, int y);
 };
 
 #endif // PIXELEDITORVIEW_H

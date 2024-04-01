@@ -6,15 +6,18 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    QStringList scaleOptions = {"1*1", "2*2", "4*4", "8*8", "16*16", "32*32", "64*64"};
     bool ok;
-    int width = QInputDialog::getInt(this, tr("Canvas Width"), tr("Enter canvas width:"), 50, 1, 1000, 1, &ok);
-    if (!ok) return;
-
-    int height = QInputDialog::getInt(this, tr("Canvas Height"), tr("Enter canvas height:"), 50, 1, 1000, 1, &ok);
-    if (!ok) return;
-    model = new Model(width, height, this);
-    pixelEditorView = new PixelEditorView(model, this,*currentColor,16,true);
-    pixelEditorView2 = new PixelEditorView(model, this,*currentColor,4,false);
+    QString selectedScale = QInputDialog::getItem(this, tr("Select Canvas Scale"), tr("Canvas Scale:"), scaleOptions, 0, false, &ok);
+    if (ok && !selectedScale.isEmpty()) {
+        QStringList number = selectedScale.split('*');
+        int widthTimesHeight = number.at(0).toInt();
+        model = new Model(widthTimesHeight, widthTimesHeight, this);
+    } else {
+        model = new Model(64, 64, this);
+    }
+    pixelEditorView = new PixelEditorView(model, this,QColor(Qt::black),16,true);
+    pixelEditorView2 = new PixelEditorView(model, this,QColor(Qt::black),4,false);
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);
@@ -28,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
     connect(tool, &Toolbox::penModeChanged, pixelEditorView, &PixelEditorView::setPenMode);
+
+    connect(tool, &Toolbox::fillModeChanged, pixelEditorView, &PixelEditorView::setFillMode);
     connect(tool, &Toolbox::undoChanged, pixelEditorView, &PixelEditorView::setUndo);
     connect(tool, &Toolbox::redoChanged, pixelEditorView, &PixelEditorView::setRedo);
     connect(tool, &Toolbox::colorChanged, pixelEditorView, &PixelEditorView::setCurrentColor);

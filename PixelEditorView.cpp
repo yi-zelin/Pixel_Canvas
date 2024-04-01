@@ -16,13 +16,23 @@ void PixelEditorView::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
     const QImage &image = model->getCanvasImage();
-    //image.scaled();
+
+    const int scaleLessThan4by4 = 100;
+
+    if (image.width() < 5 && image.height() < 5) {
+        scale = scaleLessThan4by4;
+    } else {
+        scale = qMin(width() / image.width(), height() / image.height());
+        scale = qMax(scale, 10);
+    }
+
     // Calculate the top-left position to center the canvas
     int offsetX = (width() - image.width() * scale) / 2;
     int offsetY = (height() - image.height() * scale) / 2;
 
-    for (int y = 0; y < image.height(); ++y) {
-        for (int x = 0; x < image.width(); ++x) {
+    // Draw the scaled pixels
+    for (int y = 0; y < image.height(); y++) {
+        for (int x = 0; x < image.width(); x++) {
             QRect rect(offsetX + x * scale, offsetY + y * scale, scale, scale);
             painter.fillRect(rect, QColor(image.pixel(x, y)));
         }
@@ -35,7 +45,6 @@ void PixelEditorView::resizeEvent(QResizeEvent *event) {
 }
 
 void PixelEditorView::mousePressEvent(QMouseEvent *event) {
-    if (!isDrawingEnabled) return;
     currentStroke = new Stroke(currentColor);
     redoList.clear();
     int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
@@ -43,14 +52,21 @@ void PixelEditorView::mousePressEvent(QMouseEvent *event) {
 
     int pixelX = (event->x() - offsetX) / scale;
     int pixelY = (event->y() - offsetY) / scale;
-    if (pixelX >= 0 && pixelX < model->getCanvasImage().width() &&
-        pixelY >= 0 && pixelY < model->getCanvasImage().height()) {
-        model->setPixel(pixelX, pixelY, currentColor);
+
+    if (isDrawingEnabled){
+        if (pixelX >= 0 && pixelX < model->getCanvasImage().width() &&
+            pixelY >= 0 && pixelY < model->getCanvasImage().height()) {
+            model->setPixel(pixelX, pixelY, currentColor);
+            update();
+        }
+
+        lastPixelX = pixelX;
+        lastPixelY = pixelY;
+    } else if (isFillMode){
+        fill(pixelX, pixelY);
+        undoList.push_back(currentStroke);
         update();
     }
-
-    lastPixelX = pixelX;
-    lastPixelY = pixelY;
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
@@ -91,7 +107,9 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
 
 void PixelEditorView::mouseReleaseEvent(QMouseEvent* event)
 {
-    undoList.push_back(currentStroke);
+    if (isDrawingEnabled){
+        undoList.push_back(currentStroke);
+    }
     currentStroke = nullptr;
 }
 
@@ -128,29 +146,45 @@ void PixelEditorView::redraw(vector<Stroke*> strokes){
 }
 
 void PixelEditorView::setEraserMode(bool active) {
-    isDrawingEnabled=active;
+    isFillMode = false;
     if(active) {
-        if (!isEraserMode) {
-            previousColor = currentColor;}
+        if (!isEraserMode)
+            previousColor = currentColor;
         currentColor = QColor(Qt::white);
         isEraserMode = true;
+        isDrawingEnabled = true;
     } else {
         isDrawingEnabled=false;
-
+        isEraserMode = false;
     }
 }
 void PixelEditorView::setPenMode(bool active){
-    isDrawingEnabled=active;
+    isFillMode = false;
     if(active){
-        if (isEraserMode) {
+        if (isEraserMode)
             currentColor = previousColor;
-        }
+        isDrawingEnabled = true;
         isEraserMode = false;
     }
-
-    else
+    else{
         isDrawingEnabled=false;
+        isEraserMode = false;
+    }
 }
+
+void PixelEditorView::setFillMode(bool active){
+    if(active){
+        isDrawingEnabled = false;
+        isFillMode = true;
+        isEraserMode = false;
+    }
+    else{
+        isDrawingEnabled=false;
+        isFillMode = false;
+        isEraserMode = false;
+    }
+}
+
 void PixelEditorView::setCurrentColor(const QColor &color) {
     currentColor = color;
     isDrawingEnabled = true;
@@ -223,4 +257,20 @@ void PixelEditorView::loadJsonFromFile(vector<Stroke*> &strokes) {
 
 PixelEditorView::~PixelEditorView() {
 
+}
+
+void PixelEditorView::fill(int x, int y){
+    // if x, y valid
+    // if (x < 0 || y < 0 || x > model->xMax || y > model->yMax)
+    //     return;
+    if (model->getPixel(x,y) == QColor(Qt::white)){
+
+        model->setPixel(x, y, currentColor);
+        currentStroke->points->push_back({x, y});
+
+        fill(x+1, y);
+        fill(x-1, y);
+        fill(x, y+1);
+        fill(x, y-1);
+    }
 }

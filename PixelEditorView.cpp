@@ -256,9 +256,6 @@ PixelEditorView::~PixelEditorView() {
 }
 
 void PixelEditorView::fill(int x, int y){
-    // if x, y valid
-    // if (x < 0 || y < 0 || x > model->xMax || y > model->yMax)
-    //     return;
     if (model->getPixel(x,y) == QColor(Qt::white)){
 
         model->setPixel(x, y, currentColor);

@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/new/icons">
         <file>eraser.jpg</file>
-        <file>images.png</file>
         <file>pen.jpg</file>
         <file>redo.png</file>
         <file>shape.png</file>
@@ -9,5 +8,9 @@
         <file>undo.png</file>
         <file>export.png</file>
         <file>import.png</file>
+        <file>color.png</file>
+        <file>palette.png</file>
+        <file>line.png</file>
+        <file>rect.png</file>
     </qresource>
 </RCC>

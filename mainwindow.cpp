@@ -18,6 +18,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(pixelEditorView);
 
+    frameBox = new FrameBox(model, this);
+    frameBoxDock = new QDockWidget(tr("Frames"), this);
+    frameBoxDock -> setWidget(frameBox);
+    addDockWidget(Qt::BottomDockWidgetArea, frameBoxDock);
+    //connect(frameBox, &FrameBox::frameSelected, this, &YourMainWindowClass::onFrameSelected);
 
     // 连接信号和槽
     connectSignalsSlots();

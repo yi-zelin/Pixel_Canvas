@@ -6,6 +6,7 @@
 #include "PixelEditorView.h"
 #include "Model.h"
 #include "toolBox.h"
+#include "framebox.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -25,7 +26,8 @@ private:
     Model *model;
     QDockWidget *toolboxDock;
     QColor *currentColor;
-
+    QDockWidget *frameBoxDock;
+    FrameBox *frameBox;
     // UI相关的函数，如创建菜单、工具栏、状态栏等
     void setupUI();
     void createActions();

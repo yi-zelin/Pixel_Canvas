@@ -47,10 +47,10 @@ private:
     int scale;
     int lastPixelX;
     int lastPixelY;
-    void reDraw();
+    void redraw(vector<Stroke*> strokes);
     void saveJsonToFile(const QJsonDocument &document);
     QJsonDocument convertIntoJson(vector<Stroke*> image);
-    void loadFromJson();
+    void loadJsonFromFile(vector<Stroke*> &strokes);
 };
 
 #endif // PIXELEDITORVIEW_H

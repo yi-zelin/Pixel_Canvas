@@ -16,7 +16,6 @@ void PixelEditorView::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
     const QImage &image = model->getCanvasImage();
-
     // Calculate the top-left position to center the canvas
     int offsetX = (width() - image.width() * scale) / 2;
     int offsetY = (height() - image.height() * scale) / 2;
@@ -99,7 +98,7 @@ void PixelEditorView::undoClicked(){
     if (!undoList.empty()){
         redoList.push_back(undoList.back());
         undoList.pop_back();
-        reDraw();
+        redraw(undoList);
     }
 }
 
@@ -107,13 +106,13 @@ void PixelEditorView::redoClicked(){
     if (!redoList.empty()){
         undoList.push_back(redoList.back());
         redoList.pop_back();
-        reDraw();
+        redraw(undoList);
     }
 }
 
-void PixelEditorView::reDraw(){
+void PixelEditorView::redraw(vector<Stroke*> strokes){
     model->canvasImage.fill(Qt::white);
-    for(auto stroke: undoList)
+    for(auto stroke: strokes)
     {
         auto color = stroke->color;
         auto points = stroke->points;
@@ -131,12 +130,10 @@ void PixelEditorView::setEraserMode(bool active) {
     isDrawingEnabled=active;
     if(active) {
         if (!isEraserMode) {
-            // 第一次进入橡皮擦模式，保存当前颜色
             previousColor = currentColor;}
-        currentColor = QColor(Qt::white); // 橡皮擦颜色
+        currentColor = QColor(Qt::white);
         isEraserMode = true;
     } else {
-        // Set back to the previous drawing color or default to black
         isDrawingEnabled=false;
 
     }
@@ -145,7 +142,6 @@ void PixelEditorView::setPenMode(bool active){
     isDrawingEnabled=active;
     if(active){
         if (isEraserMode) {
-            // 从橡皮擦模式切换回笔模式，恢复上一个颜色
             currentColor = previousColor;
         }
         isEraserMode = false;
@@ -173,7 +169,9 @@ void PixelEditorView::saveClicked() {
 
 void PixelEditorView::loadClicked()
 {
-
+    vector<Stroke*> strokes;
+    loadJsonFromFile(strokes);
+    redraw(strokes);
 }
 
 QJsonDocument PixelEditorView::convertIntoJson(vector<Stroke*> image)
@@ -185,20 +183,43 @@ QJsonDocument PixelEditorView::convertIntoJson(vector<Stroke*> image)
 }
 
 void PixelEditorView::saveJsonToFile(const QJsonDocument &document) {
-    QString fileName = QFileDialog::getSaveFileName(this, QObject::tr("Save File"),
-                                                    "", QObject::tr("JSON Files (*.json)"));
-    if (fileName.isEmpty()) {
-        return;
-    }
+    QString fileName = QFileDialog::getSaveFileName(this, QObject::tr("Save File"), "", QObject::tr("JSON Files (*.ssp)"));
+    if (fileName.isEmpty())
+        return;    
     QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly)) {
-
+    if (!file.open(QIODevice::WriteOnly))
         return;
-    }
     file.write(document.toJson());
     file.close();
     return;
 }
+
+void PixelEditorView::loadJsonFromFile(vector<Stroke*> &strokes) {
+    QString fileName = QFileDialog::getOpenFileName(this, QObject::tr("Open File"), "", QObject::tr("JSON Files (*.ssp)"));
+    if (fileName.isEmpty())
+        return;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly))
+        return;
+    QByteArray saveData = file.readAll();
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+    const QJsonArray strokesArray = loadDoc.array();
+    for (const QJsonValue &value : strokesArray) {
+        QJsonObject strokeObject = value.toObject();
+
+        Stroke stroke(QColor(strokeObject["color"].toString()));
+
+        QJsonArray pointsArray = strokeObject["points"].toArray();
+        for (const QJsonValue &pointValue : pointsArray) {
+            QJsonObject pointObject = pointValue.toObject();
+            stroke.points->push_back({pointObject["x"].toInt(),pointObject["y"].toInt()});
+        }
+        strokes.push_back(&stroke);
+    }
+}
+
 PixelEditorView::~PixelEditorView() {
 
 }

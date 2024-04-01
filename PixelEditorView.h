@@ -14,7 +14,7 @@ class PixelEditorView : public QWidget {
     Q_OBJECT
 
 public:
-    explicit PixelEditorView(Model *model, QWidget *parent = nullptr,QColor currentColor = QColor(Qt::black));
+    explicit PixelEditorView(Model *model, QWidget *parent = nullptr,QColor currentColor = QColor(Qt::black),int scale = 16,bool state = true);
     bool isDrawingEnabled;
     QColor previousColor;
     bool isEraserMode;

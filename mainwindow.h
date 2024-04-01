@@ -21,18 +21,15 @@ public slots:
 private:
     Ui::MainWindow *ui;
     PixelEditorView *pixelEditorView;
+    PixelEditorView *pixelEditorView2;
     Toolbox *tool;
     Model *model;
+    Model *model2;
     QDockWidget *toolboxDock;
     QColor *currentColor;
 
-    // UI相关的函数，如创建菜单、工具栏、状态栏等
-    void setupUI();
-    void createActions();
-    void createMenus();
-    void createToolbars();
     void connectSignalsSlots();
-    QColor getcolor();
+
 };
 
 #endif // MAINWINDOW_H

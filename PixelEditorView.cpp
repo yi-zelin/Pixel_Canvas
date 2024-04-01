@@ -3,12 +3,12 @@
 #include <QMouseEvent>
 
 
-PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor)
-    : QWidget(parent), model(model),currentColor(currentColor), scale(16),lastPixelX(-1), lastPixelY(-1)
+PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor,int scale,bool state)
+    : QWidget(parent), model(model),currentColor(currentColor), scale(scale),lastPixelX(-1), lastPixelY(-1)
 {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
-    isDrawingEnabled=true;
+    isDrawingEnabled=state;
 
 }
 
@@ -16,6 +16,7 @@ void PixelEditorView::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
     const QImage &image = model->getCanvasImage();
+    //image.scaled();
     // Calculate the top-left position to center the canvas
     int offsetX = (width() - image.width() * scale) / 2;
     int offsetY = (height() - image.height() * scale) / 2;

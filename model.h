@@ -18,8 +18,9 @@ public:
 signals:
     void imageChanged();
 
-private:
-
+protected:
+    int xMax;
+    int yMax;
 };
 
 #endif // MODEL_H

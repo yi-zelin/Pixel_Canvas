@@ -14,8 +14,8 @@ public:
     explicit Toolbox(Model *model, QWidget *parent = nullptr);
 signals:
     void eraserModeChanged(bool active);
-    void redoChanged(bool active);
-    void undoChanged(bool active);
+    void redoChanged();
+    void undoChanged();
 };
 
 #endif // TOOLBOX_H

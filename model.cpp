@@ -2,6 +2,8 @@
 
 Model::Model(int width, int height, QObject *parent)
     : QObject(parent), canvasImage(width, height, QImage::Format_ARGB32_Premultiplied) {
+    xMax = width;
+    yMax = height;
     canvasImage.fill(Qt::white); // 初始化为白色或透明背景
 }
 

@@ -36,14 +36,12 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
 
     QToolButton *redo = new QToolButton(this);
     redo->setIcon(QIcon(":/new/icons/redo.png")); // Adjust the path to your icon
-    redo->setCheckable(true); // Optional: make the button checkable
     layout->addWidget(redo, 2, 1);
     redo->setMaximumSize(50,50);
     redo->setStyleSheet("QToolButton { icon-size: 30px 30px; background-color: white; }");
 
     QToolButton *undo = new QToolButton(this);
     undo->setIcon(QIcon(":/new/icons/undo.png")); // Adjust the path to your icon
-    undo->setCheckable(true); // Optional: make the button checkable
     layout->addWidget(undo, 2, 0);
     undo->setMaximumSize(50,50);
     undo->setStyleSheet("QToolButton { icon-size: 30px 30px; background-color: white; }");
@@ -63,6 +61,20 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
     export1->setStyleSheet("QToolButton { icon-size: 30px 30px; background-color: white; }");
 
     connect(eraserButton, &QToolButton::toggled, this, &Toolbox::eraserModeChanged);
-    connect(redo, &QToolButton::toggled, this, &Toolbox::redoChanged);
-    connect(undo, &QToolButton::toggled, this, &Toolbox::undoChanged);
+    connect(redo, &QToolButton::clicked, this, &Toolbox::redoChanged);
+    connect(undo, &QToolButton::clicked, this, &Toolbox::undoChanged);
+
+    connect(penButton, &QToolButton::toggled, this, [eraserButton, penButton](bool checked) {
+        if (checked) {
+            eraserButton->setChecked(false);
+            penButton->setChecked(true);
+        }
+    });
+
+    connect(eraserButton, &QToolButton::toggled, this, [eraserButton, penButton](bool checked) {
+        if (checked) {
+            eraserButton->setChecked(true);
+            penButton->setChecked(false);
+        }
+    });
 }

@@ -10,25 +10,26 @@ class PixelEditorView : public QWidget {
     Q_OBJECT
 
 public:
-    explicit PixelEditorView(Model *model, QWidget *parent = nullptr,QColor *currentColor =new QColor(Qt::white));
+    explicit PixelEditorView(Model *model, QWidget *parent = nullptr,QColor currentColor = QColor(Qt::white));
     ~PixelEditorView() override;
 
 public slots:
     void setEraserMode(bool active);
-    void setRedo(bool active);
-    void setUndo(bool active);
+    void setRedo();
+    void setUndo();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void undoClicked();
     void redoClicked();
 
 private:
     Model *model;
-    QColor *currentColor;
+    QColor currentColor;
     vector<Stroke*> undoList;
     vector<Stroke*> redoList;
     Stroke *currentStroke;

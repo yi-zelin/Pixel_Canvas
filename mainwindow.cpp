@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 创建和初始化模型，大小为50x50像素
     model = new Model(50, 50, this);
     // 创建和初始化像素编辑器视图，将模型传递给它
-    pixelEditorView = new PixelEditorView(model, this,currentColor);
+    pixelEditorView = new PixelEditorView(model, this);
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);

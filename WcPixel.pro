@@ -10,7 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     PixelEditorView.cpp \
-    frame.cpp \
+    framebox.cpp \
     main.cpp \
     mainwindow.cpp \
     model.cpp \
@@ -19,7 +19,7 @@ SOURCES += \
 
 HEADERS += \
     PixelEditorView.h \
-    frame.h \
+    framebox.h \
     mainwindow.h \
     model.h \
     stroke.h \

@@ -18,11 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(pixelEditorView);
 
-    // 设置UI，例如创建动作和菜单
-    setupUI();
-    createActions();
-    createMenus();
-    createToolbars();
 
     // 连接信号和槽
     connectSignalsSlots();
@@ -40,22 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() {
     delete ui;
     // 注意: Model 和 PixelEditorView 的析构在 Qt 的父子关系管理下自动处理
-}
-
-void MainWindow::setupUI() {
-    // 初始化窗口的其他UI部分，如状态栏和停靠窗口
-}
-
-void MainWindow::createActions() {
-    // 创建与用户交互相关的动作
-}
-
-void MainWindow::createMenus() {
-    // 创建菜单
-}
-
-void MainWindow::createToolbars() {
-    // 创建工具栏
 }
 
 void MainWindow::connectSignalsSlots() {

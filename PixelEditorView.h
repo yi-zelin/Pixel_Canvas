@@ -9,6 +9,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QFileDialog>
+#include <QBuffer>
 
 class PixelEditorView : public QWidget {
     Q_OBJECT
@@ -50,9 +51,9 @@ private:
     int lastPixelX;
     int lastPixelY;
     void redraw(vector<Stroke*> strokes);
-    void saveJsonToFile(const QJsonDocument &document);
-    QJsonDocument convertIntoJson(vector<Stroke*> image);
-    void loadJsonFromFile(vector<Stroke*> &strokes);
+    void saveJsonToFile( QJsonDocument &document);
+    QJsonDocument convertIntoJson( QImage image );
+    void loadJsonFromFile();
     void fill(int x, int y);
 };
 

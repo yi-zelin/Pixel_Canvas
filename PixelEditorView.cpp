@@ -198,29 +198,33 @@ void PixelEditorView::setRedo(){
 }
 
 void PixelEditorView::saveClicked() {
-    saveJsonToFile(convertIntoJson(undoList));
+    QJsonDocument jsonFile(convertIntoJson(model->getCanvasImage()));
+    saveJsonToFile(jsonFile);
 }
 
 
 void PixelEditorView::loadClicked()
 {
-    vector<Stroke*> strokes;
-    loadJsonFromFile(strokes);
-    redraw(strokes);
+    loadJsonFromFile();
+
 }
 
-QJsonDocument PixelEditorView::convertIntoJson(vector<Stroke*> image)
+QJsonDocument PixelEditorView::convertIntoJson(QImage image)
 {
-    QJsonArray strokesArray;
-    for (const auto stroke : image)
-        strokesArray.append(stroke -> toJson());
-    return QJsonDocument(strokesArray);
+    QByteArray imageBytes;
+    QBuffer buffer(&imageBytes);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "PNG");
+    QByteArray data = imageBytes.toBase64();
+    QJsonObject json;
+    json["image"] = QString(data);
+    return QJsonDocument(json);
 }
 
-void PixelEditorView::saveJsonToFile(const QJsonDocument &document) {
+void PixelEditorView::saveJsonToFile(QJsonDocument &document) {
     QString fileName = QFileDialog::getSaveFileName(this, QObject::tr("Save File"), "", QObject::tr("JSON Files (*.ssp)"));
     if (fileName.isEmpty())
-        return;    
+        return;
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
         return;
@@ -229,7 +233,7 @@ void PixelEditorView::saveJsonToFile(const QJsonDocument &document) {
     return;
 }
 
-void PixelEditorView::loadJsonFromFile(vector<Stroke*> &strokes) {
+void PixelEditorView::loadJsonFromFile() {
     QString fileName = QFileDialog::getOpenFileName(this, QObject::tr("Open File"), "", QObject::tr("JSON Files (*.ssp)"));
     if (fileName.isEmpty())
         return;
@@ -238,21 +242,13 @@ void PixelEditorView::loadJsonFromFile(vector<Stroke*> &strokes) {
     if (!file.open(QIODevice::ReadOnly))
         return;
     QByteArray saveData = file.readAll();
-    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
-
-    const QJsonArray strokesArray = loadDoc.array();
-    for (const QJsonValue &value : strokesArray) {
-        QJsonObject strokeObject = value.toObject();
-
-        Stroke stroke(QColor(strokeObject["color"].toString()));
-
-        QJsonArray pointsArray = strokeObject["points"].toArray();
-        for (const QJsonValue &pointValue : pointsArray) {
-            QJsonObject pointObject = pointValue.toObject();
-            stroke.points->push_back({pointObject["x"].toInt(),pointObject["y"].toInt()});
-        }
-        strokes.push_back(&stroke);
-    }
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(saveData);
+    QJsonObject jsonObj = jsonDocument.object();
+    QString string = jsonObj["image"].toString();
+    QByteArray data = string.toLatin1();
+    QImage image;
+    image.loadFromData(QByteArray::fromBase64(data));
+    model->canvasImage = image;
 }
 
 PixelEditorView::~PixelEditorView() {

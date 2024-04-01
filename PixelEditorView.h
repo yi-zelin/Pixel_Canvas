@@ -20,12 +20,18 @@ public:
     QColor currentColor;
     bool isEraserMode;
     bool isFillMode=false;
+    bool lineMode = false;
+    bool rectangleMode = false;
+    bool squareMode = false;
+
     ~PixelEditorView() override;
 
 public slots:
     void setEraserMode(bool active);
     void setPenMode(bool active);
     void setFillMode(bool active);
+    void setLineMode(bool active);
+    void setRectangleMode(bool active);
     void setRedo();
     void setUndo();
     void setCurrentColor(const QColor &color);

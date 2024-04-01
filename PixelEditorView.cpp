@@ -62,16 +62,19 @@ void PixelEditorView::mousePressEvent(QMouseEvent *event) {
 
         lastPixelX = pixelX;
         lastPixelY = pixelY;
+        currentStroke->points->push_back({pixelX,pixelY});
     } else if (isFillMode){
         fill(pixelX, pixelY);
         undoList.push_back(currentStroke);
         update();
+    } else if (lineMode){
+
     }
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
     if (!isDrawingEnabled) return;
-    if (event->buttons() & Qt::LeftButton) {
+    if (true) {
         int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
         int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
 
@@ -147,6 +150,8 @@ void PixelEditorView::redraw(vector<Stroke*> strokes){
 
 void PixelEditorView::setEraserMode(bool active) {
     isFillMode = false;
+    rectangleMode = false;
+    lineMode = false;
     if(active) {
         if (!isEraserMode)
             previousColor = currentColor;
@@ -160,6 +165,8 @@ void PixelEditorView::setEraserMode(bool active) {
 }
 void PixelEditorView::setPenMode(bool active){
     isFillMode = false;
+    rectangleMode = false;
+    lineMode = false;
     if(active){
         if (isEraserMode)
             currentColor = previousColor;
@@ -173,15 +180,41 @@ void PixelEditorView::setPenMode(bool active){
 }
 
 void PixelEditorView::setFillMode(bool active){
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    rectangleMode = false;
+    lineMode = false;
     if(active){
-        isDrawingEnabled = false;
         isFillMode = true;
-        isEraserMode = false;
     }
     else{
-        isDrawingEnabled=false;
         isFillMode = false;
-        isEraserMode = false;
+    }
+}
+
+void PixelEditorView::setLineMode(bool active){
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    isFillMode = false;
+    rectangleMode = false;
+    if(active){
+        lineMode = true;
+    }
+    else{
+        lineMode = false;
+    }
+}
+
+void PixelEditorView::setRectangleMode(bool active){
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    isFillMode = false;
+    lineMode = false;
+    if(active){
+        rectangleMode = true;
+    }
+    else{
+        rectangleMode = false;
     }
 }
 

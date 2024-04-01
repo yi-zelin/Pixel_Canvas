@@ -8,6 +8,7 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
     QToolButton *penButton = new QToolButton(this);
     penButton->setIcon(QIcon(":/new/icons/pen.jpg")); // Adjust the path to your icon
     penButton->setCheckable(true); // Optional: make the button checkable
+    penButton->setChecked(true);
     layout->addWidget(penButton, 0, 0);
     penButton->setMaximumSize(50,50);
     penButton->setStyleSheet("QToolButton { icon-size: 40px 40px; background-color: white; }");
@@ -64,21 +65,33 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
     connect(export1, &QToolButton::clicked, this, &Toolbox::saveChanged);
     connect(import, &QToolButton::clicked, this, &Toolbox::loadChanged);
 
-    connect(penButton, &QToolButton::toggled, this, [this, eraserButton](bool checked) {
+    connect(penButton, &QToolButton::toggled, this, [this, eraserButton, shape](bool checked) {
         if (checked) {
             eraserButton->setChecked(false);
+            shape->setChecked(false);
             emit penModeChanged(true);
 
         } else {
             emit penModeChanged(false);
         }
     });
-    connect(eraserButton, &QToolButton::toggled, this, [this, penButton](bool checked) {
+    connect(eraserButton, &QToolButton::toggled, this, [this, penButton, shape](bool checked) {
         if (checked) {
             penButton->setChecked(false);
+            shape->setChecked(false);
             emit eraserModeChanged(true);
         } else {
             emit eraserModeChanged(false);
+        }
+    });
+    connect(shape, &QToolButton::toggled, this, [this, eraserButton, penButton](bool checked) {
+        if (checked) {
+            eraserButton->setChecked(false);
+            penButton->setChecked(false);
+            emit fillModeChanged(true);
+
+        } else {
+            emit fillModeChanged(false);
         }
     });
 

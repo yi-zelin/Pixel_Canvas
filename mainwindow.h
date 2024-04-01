@@ -22,8 +22,10 @@ public slots:
 private:
     Ui::MainWindow *ui;
     PixelEditorView *pixelEditorView;
+    PixelEditorView *pixelEditorView2;
     Toolbox *tool;
     Model *model;
+    Model *model2;
     QDockWidget *toolboxDock;
     QColor *currentColor;
     QDockWidget *frameBoxDock;
@@ -33,8 +35,9 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
+
     void connectSignalsSlots();
-    QColor getcolor();
+
 };
 
 #endif // MAINWINDOW_H

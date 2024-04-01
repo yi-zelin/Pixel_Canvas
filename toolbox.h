@@ -18,12 +18,12 @@ public:
 signals:
     void eraserModeChanged(bool active);
     void penModeChanged(bool active);
+    void fillModeChanged(bool active);
     void redoChanged();
     void undoChanged();
     void colorChanged(const QColor &Color);
     void saveChanged();
     void loadChanged();
-
 };
 
 #endif // TOOLBOX_H

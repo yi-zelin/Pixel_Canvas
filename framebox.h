@@ -3,9 +3,11 @@
 
 #include <QWidget>
 #include <QListWidget>
-#include "model.h"
+
 #include <QVBoxLayout>
 #include <QToolButton>
+#include "model.h"
+
 class FrameBox : public QWidget {
     Q_OBJECT
 
@@ -17,12 +19,16 @@ signals:
     void frameSelected(int frameIndex);
 
 public slots:
-    void addFrame(const QImage &frameImage);
+    void addFrame();
+    void deleteFrame();
     void selectFrame(int frameIndex);
 
 private:
     QListWidget *listWidget;
     Model *model;
+    QList<QImage> listFrames;
+    int nowEditing;
+    QGridLayout *layout;
 };
 
 #endif // FRAMEBOX_H

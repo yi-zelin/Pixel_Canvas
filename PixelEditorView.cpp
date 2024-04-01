@@ -4,10 +4,12 @@
 
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor)
-    : QWidget(parent), model(model),currentColor(currentColor), scale(16),lastPixelX(-1), lastPixelY(-1) {
+    : QWidget(parent), model(model),currentColor(currentColor), scale(16),lastPixelX(-1), lastPixelY(-1)
+{
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
     isDrawingEnabled=true;
+
 }
 
 void PixelEditorView::paintEvent(QPaintEvent *event) {
@@ -128,19 +130,27 @@ void PixelEditorView::reDraw(){
 void PixelEditorView::setEraserMode(bool active) {
     isDrawingEnabled=active;
     if(active) {
-        PreviousColor=currentColor;
-        // Set the eraser color (usually the background color, e.g., white)
-        currentColor = QColor(Qt::white);
+        if (!isEraserMode) {
+            // 第一次进入橡皮擦模式，保存当前颜色
+            previousColor = currentColor;}
+        currentColor = QColor(Qt::white); // 橡皮擦颜色
+        isEraserMode = true;
     } else {
         // Set back to the previous drawing color or default to black
         isDrawingEnabled=false;
-        currentColor=PreviousColor;
+
     }
 }
 void PixelEditorView::setPenMode(bool active){
     isDrawingEnabled=active;
-    if(active)
-        currentColor = QColor(Qt::black);
+    if(active){
+        if (isEraserMode) {
+            // 从橡皮擦模式切换回笔模式，恢复上一个颜色
+            currentColor = previousColor;
+        }
+        isEraserMode = false;
+    }
+
     else
         isDrawingEnabled=false;
 }
@@ -159,6 +169,7 @@ void PixelEditorView::setRedo(){
 void PixelEditorView::saveClicked() {
     saveJsonToFile(convertIntoJson(undoList));
 }
+
 
 void PixelEditorView::loadClicked()
 {
@@ -180,6 +191,10 @@ void PixelEditorView::saveJsonToFile(const QJsonDocument &document) {
         return;
     }
     QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly)) {
+
+        return;
+    }
     file.write(document.toJson());
     file.close();
     return;

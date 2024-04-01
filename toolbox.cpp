@@ -81,22 +81,16 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
             emit eraserModeChanged(false);
         }
     });
-    connect(color, &QToolButton::clicked, this, [this, penButton,eraserButton](bool checked) {
-        if (checked) {
-            penButton->setChecked(true);
+
+    connect(color, &QToolButton::clicked, this, [this, eraserButton, penButton]() {
+        QColor selectedColor = QColorDialog::getColor(Qt::black, this, "Select Color");
+        if (selectedColor.isValid()) {
             eraserButton->setChecked(false);
-            emit penModeChanged(true);
+            penButton->setChecked(true);
             emit eraserModeChanged(false);
-        } else {
-            emit penModeChanged(false);
-            emit eraserModeChanged(true);
+            emit penModeChanged(true);
+            emit colorChanged(selectedColor);
         }
-    });
-    connect(color, &QToolButton::clicked, this, [this]() {
-    QColor selectedColor = QColorDialog::getColor(Qt::black, this, "Select Color");
-    if (selectedColor.isValid()) {
-        emit colorChanged(selectedColor);
-    }
     });
 
 

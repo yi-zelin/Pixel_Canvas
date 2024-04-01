@@ -2,6 +2,7 @@
 #define STROKE_H
 
 #include "qcolor.h"
+#include "qjsonobject.h"
 #include <utility>
 #include <vector>
 using std::pair;
@@ -13,6 +14,7 @@ public:
     Stroke(QColor color);
     vector<pair<int,int>> *points;
     QColor color;
+    QJsonObject toJson();
 
 };
 

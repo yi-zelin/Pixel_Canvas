@@ -22,7 +22,7 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
 
     QToolButton *color = new QToolButton(this);
     color->setIcon(QIcon(":/new/icons/images.png")); // Adjust the path to your icon
-    color->setCheckable(true); // Optional: make the button checkable
+     // Optional: make the button checkable
     layout->addWidget(color, 1, 0);
     color->setMaximumSize(50,50);
     color->setStyleSheet("QToolButton { icon-size: 30px 30px; background-color: white; }");
@@ -48,14 +48,12 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
 
     QToolButton *import = new QToolButton(this);
     import->setIcon(QIcon(":/new/icons/import.png")); // Adjust the path to your icon
-    import->setCheckable(true); // Optional: make the button checkable
     layout->addWidget(import, 3, 0);
     import->setMaximumSize(50,50);
     import->setStyleSheet("QToolButton { icon-size: 30px 30px; background-color: white; }");
 
     QToolButton *export1 = new QToolButton(this);
     export1->setIcon(QIcon(":/new/icons/export.png")); // Adjust the path to your icon
-    export1->setCheckable(true); // Optional: make the button checkable
     layout->addWidget(export1, 3, 1);
     export1->setMaximumSize(50,50);
     export1->setStyleSheet("QToolButton { icon-size: 30px 30px; background-color: white; }");
@@ -63,17 +61,44 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
     connect(penButton, &QToolButton::toggled, this, &Toolbox::penModeChanged);
     connect(redo, &QToolButton::clicked, this, &Toolbox::redoChanged);
     connect(undo, &QToolButton::clicked, this, &Toolbox::undoChanged);
+    connect(export1, &QToolButton::clicked, this, &Toolbox::saveChanged);
+    connect(import, &QToolButton::clicked, this, &Toolbox::loadChanged);
 
-    connect(penButton, &QToolButton::toggled, this, [eraserButton, penButton](bool checked) {
+    connect(penButton, &QToolButton::toggled, this, [this, eraserButton](bool checked) {
         if (checked) {
             eraserButton->setChecked(false);
-            penButton->setChecked(true);
+            emit penModeChanged(true);
+
+        } else {
+            emit penModeChanged(false);
         }
     });
-    connect(eraserButton, &QToolButton::toggled, this, [eraserButton, penButton](bool checked) {
+    connect(eraserButton, &QToolButton::toggled, this, [this, penButton](bool checked) {
         if (checked) {
-            eraserButton->setChecked(true);
             penButton->setChecked(false);
+            emit eraserModeChanged(true);
+        } else {
+            emit eraserModeChanged(false);
         }
     });
+    connect(color, &QToolButton::clicked, this, [this, penButton,eraserButton](bool checked) {
+        if (checked) {
+            penButton->setChecked(true);
+            eraserButton->setChecked(false);
+            emit penModeChanged(true);
+            emit eraserModeChanged(false);
+        } else {
+            emit penModeChanged(false);
+            emit eraserModeChanged(true);
+        }
+    });
+    connect(color, &QToolButton::clicked, this, [this]() {
+    QColor selectedColor = QColorDialog::getColor(Qt::black, this, "Select Color");
+    if (selectedColor.isValid()) {
+        emit colorChanged(selectedColor);
+    }
+    });
+
+
+
 }

@@ -2,10 +2,12 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor)
     : QWidget(parent), model(model),currentColor(currentColor), scale(16),lastPixelX(-1), lastPixelY(-1) {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
+    isDrawingEnabled=true;
 }
 
 void PixelEditorView::paintEvent(QPaintEvent *event) {
@@ -31,6 +33,7 @@ void PixelEditorView::resizeEvent(QResizeEvent *event) {
 }
 
 void PixelEditorView::mousePressEvent(QMouseEvent *event) {
+    if (!isDrawingEnabled) return;
     currentStroke = new Stroke(currentColor);
     redoList.clear();
     int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
@@ -49,6 +52,7 @@ void PixelEditorView::mousePressEvent(QMouseEvent *event) {
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
+    if (!isDrawingEnabled) return;
     if (event->buttons() & Qt::LeftButton) {
         int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
         int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
@@ -122,24 +126,63 @@ void PixelEditorView::reDraw(){
 }
 
 void PixelEditorView::setEraserMode(bool active) {
+    isDrawingEnabled=active;
     if(active) {
+        PreviousColor=currentColor;
         // Set the eraser color (usually the background color, e.g., white)
         currentColor = QColor(Qt::white);
     } else {
         // Set back to the previous drawing color or default to black
-        currentColor = QColor(Qt::black); // Or the previous selected color before erasing
+        isDrawingEnabled=false;
+        currentColor=PreviousColor;
     }
 }
 void PixelEditorView::setPenMode(bool active){
+    isDrawingEnabled=active;
     if(active)
         currentColor = QColor(Qt::black);
+    else
+        isDrawingEnabled=false;
+}
+void PixelEditorView::setCurrentColor(const QColor &color) {
+    currentColor = color;
+    isDrawingEnabled = true;
 }
 
 void PixelEditorView::setUndo(){
-    PixelEditorView::undoClicked();
+    undoClicked();
 }
 void PixelEditorView::setRedo(){
-    PixelEditorView::redoClicked();
+    redoClicked();
+}
+
+void PixelEditorView::saveClicked() {
+    saveJsonToFile(convertIntoJson(undoList));
+}
+
+void PixelEditorView::loadClicked()
+{
+
+}
+
+QJsonDocument PixelEditorView::convertIntoJson(vector<Stroke*> image)
+{
+    QJsonArray strokesArray;
+    for (const auto stroke : image)
+        strokesArray.append(stroke -> toJson());
+    return QJsonDocument(strokesArray);
+}
+
+void PixelEditorView::saveJsonToFile(const QJsonDocument &document) {
+    QString fileName = QFileDialog::getSaveFileName(this, QObject::tr("Save File"),
+                                                    "", QObject::tr("JSON Files (*.json)"));
+    if (fileName.isEmpty()) {
+        return;
+    }
+    QFile file(fileName);
+    file.write(document.toJson());
+    file.close();
+    return;
 }
 PixelEditorView::~PixelEditorView() {
 

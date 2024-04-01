@@ -6,6 +6,9 @@
 #include <QVBoxLayout>
 #include <QToolButton>
 #include <QIcon>
+#include <QColorDialog>
+#include "PixelEditorView.h"
+
 
 class Toolbox: public QWidget
 {
@@ -17,6 +20,10 @@ signals:
     void penModeChanged(bool active);
     void redoChanged();
     void undoChanged();
+    void colorChanged(const QColor &Color);
+    void saveChanged();
+    void loadChanged();
+
 };
 
 #endif // TOOLBOX_H

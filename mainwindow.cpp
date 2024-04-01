@@ -31,6 +31,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tool, &Toolbox::penModeChanged, pixelEditorView, &PixelEditorView::setPenMode);
     connect(tool, &Toolbox::undoChanged, pixelEditorView, &PixelEditorView::setUndo);
     connect(tool, &Toolbox::redoChanged, pixelEditorView, &PixelEditorView::setRedo);
+    connect(tool, &Toolbox::colorChanged, pixelEditorView, &PixelEditorView::setCurrentColor);
+    connect(tool, &Toolbox::saveChanged, pixelEditorView, &PixelEditorView::saveClicked);
+    connect(tool, &Toolbox::loadChanged, pixelEditorView, &PixelEditorView::loadClicked);
+
 }
 
 MainWindow::~MainWindow() {
@@ -58,4 +62,5 @@ void MainWindow::connectSignalsSlots() {
     // 连接模型的信号到视图的槽，以便图像变更时更新视图
     connect(model, &Model::imageChanged, pixelEditorView, static_cast<void (QWidget::*)()>(&QWidget::update));
 }
+
 

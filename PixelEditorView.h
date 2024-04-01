@@ -5,12 +5,18 @@
 #include <QWidget>
 #include "Model.h"
 #include "stroke.h"
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QFileDialog>
 
 class PixelEditorView : public QWidget {
     Q_OBJECT
 
 public:
     explicit PixelEditorView(Model *model, QWidget *parent = nullptr,QColor currentColor = QColor(Qt::white));
+    bool isDrawingEnabled;
+    QColor PreviousColor;
     ~PixelEditorView() override;
 
 public slots:
@@ -18,6 +24,9 @@ public slots:
     void setPenMode(bool active);
     void setRedo();
     void setUndo();
+    void setCurrentColor(const QColor &color);
+    void saveClicked();
+    void loadClicked();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -38,6 +47,9 @@ private:
     int lastPixelX;
     int lastPixelY;
     void reDraw();
+    void saveJsonToFile(const QJsonDocument &document);
+    QJsonDocument convertIntoJson(vector<Stroke*> image);
+    void loadFromJson();
 };
 
 #endif // PIXELEDITORVIEW_H

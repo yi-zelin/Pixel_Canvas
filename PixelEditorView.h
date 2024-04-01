@@ -15,6 +15,7 @@ public:
 
 public slots:
     void setEraserMode(bool active);
+    void setPenMode(bool active);
     void setRedo();
     void setUndo();
 

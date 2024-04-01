@@ -130,6 +130,10 @@ void PixelEditorView::setEraserMode(bool active) {
         currentColor = QColor(Qt::black); // Or the previous selected color before erasing
     }
 }
+void PixelEditorView::setPenMode(bool active){
+    if(active)
+        currentColor = QColor(Qt::black);
+}
 
 void PixelEditorView::setUndo(){
     PixelEditorView::undoClicked();

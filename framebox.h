@@ -23,6 +23,7 @@ public slots:
     void addFrame();
     void deleteFrame();
     void selectFrame(int frameIndex);
+    void previewFrame();
 
 private:
     void frameSelected(int frameIndex);

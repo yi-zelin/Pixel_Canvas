@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QListWidget>
-
 #include <QVBoxLayout>
 #include <QToolButton>
 #include "model.h"
@@ -16,7 +15,8 @@ public:
     ~FrameBox() override;
 
 signals:
-    void frameSelected(int frameIndex);
+
+    void callUpDate();
 
 public slots:
     void addFrame();
@@ -24,11 +24,15 @@ public slots:
     void selectFrame(int frameIndex);
 
 private:
+    void frameSelected(int frameIndex);
     QListWidget *listWidget;
     Model *model;
-    QList<QImage> listFrames;
+    QVector<QImage> listFrames;
+    QVector<QToolButton> selectFrames;
+    QVector<bool> isDeleted;
     int nowEditing;
     QGridLayout *layout;
+    int frameCount;
 };
 
 #endif // FRAMEBOX_H

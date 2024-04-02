@@ -261,8 +261,8 @@ PixelEditorView::~PixelEditorView() {
 
 void PixelEditorView::fill(int x, int y){
     // if x, y valid
-    // if (x < 0 || y < 0 || x > model->xMax || y > model->yMax)
-    //     return;
+     if (x < 0 || y < 0 || x > model->getCanvasImage().width() || y > model->getCanvasImage().width())
+         return;
     if (model->getPixel(x,y) == QColor(Qt::white)){
 
         model->setPixel(x, y, currentColor);
@@ -273,4 +273,7 @@ void PixelEditorView::fill(int x, int y){
         fill(x, y+1);
         fill(x, y-1);
     }
+}
+void PixelEditorView::getUpdate(){
+    update();
 }

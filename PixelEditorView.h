@@ -31,6 +31,7 @@ public slots:
     void setCurrentColor(const QColor &color);
     void saveClicked();
     void loadClicked();
+    void getUpdate();
 
 protected:
     void paintEvent(QPaintEvent *event) override;

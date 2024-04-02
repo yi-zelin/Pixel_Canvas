@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     frameBoxDock -> setWidget(frameBox);
     addDockWidget(Qt::BottomDockWidgetArea, frameBoxDock);
     //connect(frameBox, &FrameBox::frameSelected, this, &YourMainWindowClass::onFrameSelected);
-
+    connect(frameBox, &FrameBox::callUpDate, pixelEditorView, &PixelEditorView::getUpdate);
     // 连接信号和槽
     connectSignalsSlots();
 

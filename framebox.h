@@ -22,6 +22,7 @@ signals:
 public slots:
     void addFrame();
     void deleteFrame();
+    void previewFrame();
     void selectFrame(int frameIndex);
 
 private:
@@ -36,6 +37,7 @@ private:
     QGridLayout *layout;
     int frameCount;
     PixelEditorView *view;
+    int previewSpeed;
 };
 
 #endif // FRAMEBOX_H

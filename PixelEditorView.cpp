@@ -2,6 +2,8 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+using std::min;
+using std::max;
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor,int scale,bool state)
     : QWidget(parent), model(model),currentColor(currentColor), scale(scale),lastPixelX(-1), lastPixelY(-1)
@@ -62,21 +64,30 @@ void PixelEditorView::mousePressEvent(QMouseEvent *event) {
 
         lastPixelX = pixelX;
         lastPixelY = pixelY;
+        currentStroke->points->push_back({pixelX,pixelY});
     } else if (isFillMode){
         fill(pixelX, pixelY);
         undoList.push_back(currentStroke);
         update();
+    } else {
+        // draw line or rectangle need Real Time Rendering
+        lastPixelX = pixelX;
+        lastPixelY = pixelY;
     }
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
-    if (!isDrawingEnabled) return;
-    if (event->buttons() & Qt::LeftButton) {
-        int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
-        int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
+    int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
+    int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
 
-        int currentPixelX = (event->x() - offsetX) / scale;
-        int currentPixelY = (event->y() - offsetY) / scale;
+    int currentPixelX = (event->x() - offsetX) / scale;
+    int currentPixelY = (event->y() - offsetY) / scale;
+
+    if ((isDrawingEnabled || lineMode)&& event->buttons() & Qt::LeftButton) {
+        if (lineMode){
+            redraw(undoList);
+            currentStroke = new Stroke(currentColor);
+        }
 
         if (currentPixelX >= 0 && currentPixelX < model->getCanvasImage().width() &&
             currentPixelY >= 0 && currentPixelY < model->getCanvasImage().height()) {
@@ -99,15 +110,41 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
             update();
 
             // Update the last pixel position
-            lastPixelX = currentPixelX;
-            lastPixelY = currentPixelY;
+            if (isDrawingEnabled){
+                lastPixelX = currentPixelX;
+                lastPixelY = currentPixelY;
+            }
         }
+    } else if (rectangleMode){
+        redraw(undoList);
+        currentStroke = new Stroke(currentColor);
+
+        int minX = min(currentPixelX, lastPixelX);
+        int maxX = max(currentPixelX, lastPixelX);
+        int minY = min(currentPixelY, lastPixelY);
+        int maxY = max(currentPixelY, lastPixelY);
+
+        for (int x = minX; x <= maxX; x++){
+            model->setPixel(x, minY, currentColor);
+            model->setPixel(x, maxY, currentColor);
+            currentStroke->points->push_back({x,minY});
+            currentStroke->points->push_back({x,maxY});
+        }
+
+        for (int y = minY; y <= maxY; y++){
+            model->setPixel(minX, y, currentColor);
+            model->setPixel(maxX, y, currentColor);
+            currentStroke->points->push_back({minX,y});
+            currentStroke->points->push_back({maxX,y});
+        }
+
+        update();
     }
 }
 
 void PixelEditorView::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (isDrawingEnabled){
+    if (isDrawingEnabled || lineMode || rectangleMode){
         undoList.push_back(currentStroke);
     }
     currentStroke = nullptr;
@@ -147,19 +184,22 @@ void PixelEditorView::redraw(vector<Stroke*> strokes){
 
 void PixelEditorView::setEraserMode(bool active) {
     isFillMode = false;
+    rectangleMode = false;
+    lineMode = false;
+    isDrawingEnabled = active;
     if(active) {
         if (!isEraserMode)
             previousColor = currentColor;
         currentColor = QColor(Qt::white);
         isEraserMode = true;
-        isDrawingEnabled = true;
     } else {
-        isDrawingEnabled=false;
-        isEraserMode = false;
     }
 }
 void PixelEditorView::setPenMode(bool active){
     isFillMode = false;
+    rectangleMode = false;
+    lineMode = false;
+    // currentColor = previousColor;
     if(active){
         if (isEraserMode)
             currentColor = previousColor;
@@ -168,26 +208,47 @@ void PixelEditorView::setPenMode(bool active){
     }
     else{
         isDrawingEnabled=false;
-        isEraserMode = false;
     }
 }
 
 void PixelEditorView::setFillMode(bool active){
+    if (isEraserMode)
+        currentColor = previousColor;
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    rectangleMode = false;
+    lineMode = false;
     if(active){
-        isDrawingEnabled = false;
         isFillMode = true;
-        isEraserMode = false;
     }
     else{
-        isDrawingEnabled=false;
         isFillMode = false;
-        isEraserMode = false;
     }
+}
+
+void PixelEditorView::setLineMode(bool active){
+    if (isEraserMode)
+        currentColor = previousColor;
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    isFillMode = false;
+    rectangleMode = false;
+    lineMode = active;
+}
+
+void PixelEditorView::setRectangleMode(bool active){
+    if (isEraserMode)
+        currentColor = previousColor;
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    isFillMode = false;
+    lineMode = false;
+    rectangleMode = active;
 }
 
 void PixelEditorView::setCurrentColor(const QColor &color) {
     currentColor = color;
-    isDrawingEnabled = true;
+    isEraserMode = false;
 }
 
 void PixelEditorView::setUndo(){
@@ -198,29 +259,33 @@ void PixelEditorView::setRedo(){
 }
 
 void PixelEditorView::saveClicked() {
-    saveJsonToFile(convertIntoJson(undoList));
+    QJsonDocument jsonFile(convertIntoJson(model->getCanvasImage()));
+    saveJsonToFile(jsonFile);
 }
 
 
 void PixelEditorView::loadClicked()
 {
-    vector<Stroke*> strokes;
-    loadJsonFromFile(strokes);
-    redraw(strokes);
+    loadJsonFromFile();
+
 }
 
-QJsonDocument PixelEditorView::convertIntoJson(vector<Stroke*> image)
+QJsonDocument PixelEditorView::convertIntoJson(QImage image)
 {
-    QJsonArray strokesArray;
-    for (const auto stroke : image)
-        strokesArray.append(stroke -> toJson());
-    return QJsonDocument(strokesArray);
+    QByteArray imageBytes;
+    QBuffer buffer(&imageBytes);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "PNG");
+    QByteArray data = imageBytes.toBase64();
+    QJsonObject json;
+    json["image"] = QString(data);
+    return QJsonDocument(json);
 }
 
-void PixelEditorView::saveJsonToFile(const QJsonDocument &document) {
+void PixelEditorView::saveJsonToFile(QJsonDocument &document) {
     QString fileName = QFileDialog::getSaveFileName(this, QObject::tr("Save File"), "", QObject::tr("JSON Files (*.ssp)"));
     if (fileName.isEmpty())
-        return;    
+        return;
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
         return;
@@ -229,7 +294,7 @@ void PixelEditorView::saveJsonToFile(const QJsonDocument &document) {
     return;
 }
 
-void PixelEditorView::loadJsonFromFile(vector<Stroke*> &strokes) {
+void PixelEditorView::loadJsonFromFile() {
     QString fileName = QFileDialog::getOpenFileName(this, QObject::tr("Open File"), "", QObject::tr("JSON Files (*.ssp)"));
     if (fileName.isEmpty())
         return;
@@ -238,21 +303,13 @@ void PixelEditorView::loadJsonFromFile(vector<Stroke*> &strokes) {
     if (!file.open(QIODevice::ReadOnly))
         return;
     QByteArray saveData = file.readAll();
-    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
-
-    const QJsonArray strokesArray = loadDoc.array();
-    for (const QJsonValue &value : strokesArray) {
-        QJsonObject strokeObject = value.toObject();
-
-        Stroke stroke(QColor(strokeObject["color"].toString()));
-
-        QJsonArray pointsArray = strokeObject["points"].toArray();
-        for (const QJsonValue &pointValue : pointsArray) {
-            QJsonObject pointObject = pointValue.toObject();
-            stroke.points->push_back({pointObject["x"].toInt(),pointObject["y"].toInt()});
-        }
-        strokes.push_back(&stroke);
-    }
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(saveData);
+    QJsonObject jsonObj = jsonDocument.object();
+    QString string = jsonObj["image"].toString();
+    QByteArray data = string.toLatin1();
+    QImage image;
+    image.loadFromData(QByteArray::fromBase64(data));
+    model->canvasImage = image;
 }
 
 PixelEditorView::~PixelEditorView() {
@@ -260,10 +317,8 @@ PixelEditorView::~PixelEditorView() {
 }
 
 void PixelEditorView::fill(int x, int y){
-    // if x, y valid
-     if (x < 0 || y < 0 || x > model->getCanvasImage().width() || y > model->getCanvasImage().width())
-         return;
-    if (model->getPixel(x,y) == QColor(Qt::white)){
+    if ((*model).getPixel(x,y).isValid() && (*model).getPixel(x,y) == QColor(Qt::white)){
+
 
         model->setPixel(x, y, currentColor);
         currentStroke->points->push_back({x, y});

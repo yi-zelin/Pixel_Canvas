@@ -9,6 +9,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QFileDialog>
+#include <QBuffer>
 
 class PixelEditorView : public QWidget {
     Q_OBJECT
@@ -20,12 +21,18 @@ public:
     QColor currentColor;
     bool isEraserMode;
     bool isFillMode=false;
+    bool lineMode = false;
+    bool rectangleMode = false;
+    bool squareMode = false;
+
     ~PixelEditorView() override;
 
 public slots:
     void setEraserMode(bool active);
     void setPenMode(bool active);
     void setFillMode(bool active);
+    void setLineMode(bool active);
+    void setRectangleMode(bool active);
     void setRedo();
     void setUndo();
     void setCurrentColor(const QColor &color);
@@ -51,9 +58,9 @@ private:
     int lastPixelX;
     int lastPixelY;
     void redraw(vector<Stroke*> strokes);
-    void saveJsonToFile(const QJsonDocument &document);
-    QJsonDocument convertIntoJson(vector<Stroke*> image);
-    void loadJsonFromFile(vector<Stroke*> &strokes);
+    void saveJsonToFile( QJsonDocument &document);
+    QJsonDocument convertIntoJson( QImage image );
+    void loadJsonFromFile();
     void fill(int x, int y);
 };
 

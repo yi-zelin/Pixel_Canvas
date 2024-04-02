@@ -3,7 +3,8 @@
 
 FrameBox::FrameBox(Model *model,PixelEditorView *view, QWidget *parent )
     : QWidget(parent), model(model), listFrames({}),isDeleted({false}),nowEditing(0) ,redoLists({{}}),view(view) {
-
+    previewSpeed = 30;
+    previewTime=100;
     layout = new QGridLayout(this);
     QToolButton *addButton = new QToolButton(this);
     addButton->setText("add");
@@ -101,7 +102,32 @@ void FrameBox::deleteFrame() {
 
 }
 void FrameBox::previewFrame() {
+    int speed = 1000 / previewSpeed;
+    int nowSelect = 0;
+    view->isDrawingEnabled = false;
 
+    QToolButton *addButton = qobject_cast<QToolButton*>(layout->itemAtPosition(0, 0)->widget());
+    QToolButton *delButton = qobject_cast<QToolButton*>(layout->itemAtPosition(1, 0)->widget());
+    QToolButton *prevButton = qobject_cast<QToolButton*>(layout->itemAtPosition(2, 0)->widget());
+    addButton->setDisabled(true);
+    delButton->setDisabled(true);
+    prevButton->setDisabled(true);
+    for(int i=1;i<100;i++){
+        while(isDeleted[nowSelect]){
+            nowSelect++;
+        }
+        QTimer::singleShot(i*previewTime, this, [this,nowSelect]() {
+           selectFrame(nowSelect);
+        });
+        nowSelect++;
+        if(nowSelect == isDeleted.size()) nowSelect =0;
+    }
+    QTimer::singleShot(speed*previewSpeed, this, [this,addButton,delButton,prevButton]() {
+        view->isDrawingEnabled = true;
+        addButton->setDisabled(false);
+        delButton->setDisabled(false);
+        prevButton->setDisabled(false);
+    });
 }
 
 FrameBox::~FrameBox() {

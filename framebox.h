@@ -7,6 +7,7 @@
 #include <QToolButton>
 #include "model.h"
 #include "stroke.h"
+#include <QTimer>
 #include "PixelEditorView.h"
 class FrameBox : public QWidget {
     Q_OBJECT
@@ -38,6 +39,7 @@ private:
     int frameCount;
     PixelEditorView *view;
     int previewSpeed;
+    int previewTime;
 };
 
 #endif // FRAMEBOX_H

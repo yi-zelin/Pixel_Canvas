@@ -19,13 +19,6 @@ FrameBox::FrameBox(Model *model,PixelEditorView *view, QWidget *parent )
     deleteButton->setStyleSheet("QToolButton { icon-size: 40px 40px; background-color: white; }");
     connect(deleteButton, &QToolButton::clicked, this, &FrameBox::deleteFrame);
 
-    QToolButton *previewButton = new QToolButton(this);
-    previewButton->setText("preview");
-    layout->addWidget(previewButton, 2, 0, 1, 1, Qt::AlignLeft);
-    previewButton->setMaximumSize(50,50);
-    previewButton->setStyleSheet("QToolButton { icon-size: 40px 40px; background-color: white; }");
-    connect(previewButton, &QToolButton::clicked, this, &FrameBox::deleteFrame);
-
     QToolButton *firstFrame = new QToolButton(this);
     layout->addWidget(firstFrame, 0, 1, 1, 1, Qt::AlignLeft);
     firstFrame->setMaximumSize(150, 150);
@@ -102,5 +95,5 @@ void FrameBox::deleteFrame() {
 }
 
 FrameBox::~FrameBox() {
-    // Qt's parent-child relationship will delete the listWidget automatically
+
 }

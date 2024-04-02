@@ -2,9 +2,11 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+using std::min;
+using std::max;
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor,int scale,bool state)
-    : QWidget(parent), model(model),currentColor(currentColor), scale(scale),lastPixelX(-1), lastPixelY(-1), state(state)
+    : QWidget(parent), currentColor(currentColor),model(model), scale(scale),lastPixelX(-1), lastPixelY(-1)
 {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
@@ -19,9 +21,9 @@ void PixelEditorView::paintEvent(QPaintEvent *event) {
 
     const int scaleLessThan4by4 = 100;
 
-    if (image.width() < 5 && image.height() < 5 /*&& state*/) {
+    if (image.width() < 5 && image.height() < 5) {
         scale = scaleLessThan4by4;
-    } else if(state){
+    } else {
         scale = qMin(width() / image.width(), height() / image.height());
         scale = qMax(scale, 10);
     }
@@ -62,21 +64,30 @@ void PixelEditorView::mousePressEvent(QMouseEvent *event) {
 
         lastPixelX = pixelX;
         lastPixelY = pixelY;
+        currentStroke->points->push_back({pixelX,pixelY});
     } else if (isFillMode){
         fill(pixelX, pixelY);
         undoList.push_back(currentStroke);
         update();
+    } else {
+        // draw line or rectangle need Real Time Rendering
+        lastPixelX = pixelX;
+        lastPixelY = pixelY;
     }
 }
 
 void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
-    if (!isDrawingEnabled) return;
-    if (event->buttons() & Qt::LeftButton) {
-        int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
-        int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
+    int offsetX = (width() - model->getCanvasImage().width() * scale) / 2;
+    int offsetY = (height() - model->getCanvasImage().height() * scale) / 2;
 
-        int currentPixelX = (event->x() - offsetX) / scale;
-        int currentPixelY = (event->y() - offsetY) / scale;
+    int currentPixelX = (event->x() - offsetX) / scale;
+    int currentPixelY = (event->y() - offsetY) / scale;
+
+    if ((isDrawingEnabled || lineMode)&& event->buttons() & Qt::LeftButton) {
+        if (lineMode){
+            redraw(undoList);
+            currentStroke = new Stroke(currentColor);
+        }
 
         if (currentPixelX >= 0 && currentPixelX < model->getCanvasImage().width() &&
             currentPixelY >= 0 && currentPixelY < model->getCanvasImage().height()) {
@@ -99,16 +110,41 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
             update();
 
             // Update the last pixel position
-            lastPixelX = currentPixelX;
-            lastPixelY = currentPixelY;
+            if (isDrawingEnabled){
+                lastPixelX = currentPixelX;
+                lastPixelY = currentPixelY;
+            }
         }
+    } else if (rectangleMode){
+        redraw(undoList);
+        currentStroke = new Stroke(currentColor);
+
+        int minX = min(currentPixelX, lastPixelX);
+        int maxX = max(currentPixelX, lastPixelX);
+        int minY = min(currentPixelY, lastPixelY);
+        int maxY = max(currentPixelY, lastPixelY);
+
+        for (int x = minX; x <= maxX; x++){
+            model->setPixel(x, minY, currentColor);
+            model->setPixel(x, maxY, currentColor);
+            currentStroke->points->push_back({x,minY});
+            currentStroke->points->push_back({x,maxY});
+        }
+
+        for (int y = minY; y <= maxY; y++){
+            model->setPixel(minX, y, currentColor);
+            model->setPixel(maxX, y, currentColor);
+            currentStroke->points->push_back({minX,y});
+            currentStroke->points->push_back({maxX,y});
+        }
+
+        update();
     }
 }
 
 void PixelEditorView::mouseReleaseEvent(QMouseEvent* event)
 {
-    Q_UNUSED(event);
-    if (isDrawingEnabled){
+    if (isDrawingEnabled || lineMode || rectangleMode){
         undoList.push_back(currentStroke);
     }
     currentStroke = nullptr;
@@ -148,19 +184,22 @@ void PixelEditorView::redraw(vector<Stroke*> strokes){
 
 void PixelEditorView::setEraserMode(bool active) {
     isFillMode = false;
+    rectangleMode = false;
+    lineMode = false;
+    isDrawingEnabled = active;
     if(active) {
         if (!isEraserMode)
             previousColor = currentColor;
         currentColor = QColor(Qt::white);
         isEraserMode = true;
-        isDrawingEnabled = true;
     } else {
-        isDrawingEnabled=false;
-        isEraserMode = false;
     }
 }
 void PixelEditorView::setPenMode(bool active){
     isFillMode = false;
+    rectangleMode = false;
+    lineMode = false;
+    // currentColor = previousColor;
     if(active){
         if (isEraserMode)
             currentColor = previousColor;
@@ -169,26 +208,47 @@ void PixelEditorView::setPenMode(bool active){
     }
     else{
         isDrawingEnabled=false;
-        isEraserMode = false;
     }
 }
 
 void PixelEditorView::setFillMode(bool active){
+    if (isEraserMode)
+        currentColor = previousColor;
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    rectangleMode = false;
+    lineMode = false;
     if(active){
-        isDrawingEnabled = false;
         isFillMode = true;
-        isEraserMode = false;
     }
     else{
-        isDrawingEnabled=false;
         isFillMode = false;
-        isEraserMode = false;
     }
+}
+
+void PixelEditorView::setLineMode(bool active){
+    if (isEraserMode)
+        currentColor = previousColor;
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    isFillMode = false;
+    rectangleMode = false;
+    lineMode = active;
+}
+
+void PixelEditorView::setRectangleMode(bool active){
+    if (isEraserMode)
+        currentColor = previousColor;
+    isDrawingEnabled = false;
+    isEraserMode = false;
+    isFillMode = false;
+    lineMode = false;
+    rectangleMode = active;
 }
 
 void PixelEditorView::setCurrentColor(const QColor &color) {
     currentColor = color;
-    isDrawingEnabled = true;
+    isEraserMode = false;
 }
 
 void PixelEditorView::setUndo(){
@@ -257,7 +317,8 @@ PixelEditorView::~PixelEditorView() {
 }
 
 void PixelEditorView::fill(int x, int y){
-    if (model->getPixel(x,y) == QColor(Qt::white)){
+    if ((*model).getPixel(x,y).isValid() && (*model).getPixel(x,y) == QColor(Qt::white)){
+
 
         model->setPixel(x, y, currentColor);
         currentStroke->points->push_back({x, y});
@@ -267,4 +328,23 @@ void PixelEditorView::fill(int x, int y){
         fill(x, y+1);
         fill(x, y-1);
     }
+}
+vector<Stroke*> PixelEditorView::getUndoList(){
+    return undoList;
+}
+void PixelEditorView::setUndoList(vector<Stroke*> list){
+    undoList = list;
+}
+void PixelEditorView::getUpdate(){
+    update();
+}
+
+void PixelEditorView::frameClicked()
+{
+    resetRedoUndo();
+}
+
+void PixelEditorView::resetRedoUndo()
+{
+    redoList.clear();
 }

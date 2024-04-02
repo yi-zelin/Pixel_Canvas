@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent)
     }
     pixelEditorView = new PixelEditorView(model, this,QColor(Qt::black),16,true);
     preview = new PixelEditorView(model, this,QColor(Qt::black),4,false);
+    preview->setFixedSize(256, 256);
+
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);
@@ -44,6 +46,16 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::RightDockWidgetArea, dockWidget);
     dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
+
+    connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
+    connect(tool, &Toolbox::penModeChanged, pixelEditorView, &PixelEditorView::setPenMode);
+
+    connect(tool, &Toolbox::fillModeChanged, pixelEditorView, &PixelEditorView::setFillMode);
+    connect(tool, &Toolbox::undoChanged, pixelEditorView, &PixelEditorView::setUndo);
+    connect(tool, &Toolbox::redoChanged, pixelEditorView, &PixelEditorView::setRedo);
+    connect(tool, &Toolbox::colorChanged, pixelEditorView, &PixelEditorView::setCurrentColor);
+    connect(tool, &Toolbox::saveChanged, pixelEditorView, &PixelEditorView::saveClicked);
+    connect(tool, &Toolbox::loadChanged, pixelEditorView, &PixelEditorView::loadClicked);
 }
 MainWindow::~MainWindow() {
     delete ui;

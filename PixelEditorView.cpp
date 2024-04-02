@@ -21,9 +21,9 @@ void PixelEditorView::paintEvent(QPaintEvent *event) {
 
     const int scaleLessThan4by4 = 100;
 
-    if (image.width() < 5 && image.height() < 5) {
+    if (image.width() < 5 && image.height() < 5 /*&& state*/) {
         scale = scaleLessThan4by4;
-    } else {
+    } else if(state){
         scale = qMin(width() / image.width(), height() / image.height());
         scale = qMax(scale, 10);
     }

@@ -19,13 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
     pixelEditorView = new PixelEditorView(model, this,QColor(Qt::black),16,true);
     preview = new PixelEditorView(model, this,QColor(Qt::black),4,false);
-    pixelEditorView2 = new PixelEditorView(model, this,QColor(Qt::black),4,false);
-    QDockWidget *dockWidget = new QDockWidget(this);
-    dockWidget->setWindowTitle(tr("Preview"));
-    dockWidget->setWidget(pixelEditorView2);
-    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
-    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    pixelEditorView2->setFixedSize(256, 256);
+    preview->setFixedSize(256, 256);
 
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);

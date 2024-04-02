@@ -1,6 +1,9 @@
 #ifndef STROKE_H
 #define STROKE_H
-
+/*
+Stroke header for Stroke class
+By Kai-Chen Chiang,jinchao liang, Rishen Cao, Zelin Yi, Shuangji Li,Yuang sun
+*/
 #include "qcolor.h"
 #include "qjsonobject.h"
 #include <utility>

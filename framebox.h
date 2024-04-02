@@ -1,6 +1,9 @@
 #ifndef FRAMEBOX_H
 #define FRAMEBOX_H
-
+/*
+Framebox header for framebox class
+By Kai-Chen Chiang,jinchao liang, Rishen Cao, Zelin Yi, Shuangji Li,Yuang sun
+*/
 #include <QWidget>
 #include <QListWidget>
 #include <QVBoxLayout>

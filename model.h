@@ -1,6 +1,9 @@
 #ifndef MODEL_H
 #define MODEL_H
-
+/*
+model header for model class
+By Kai-Chen Chiang,jinchao liang, Rishen Cao, Zelin Yi, Shuangji Li,Yuang sun
+*/
 #include <QObject>
 #include <QImage>
 #include <QColor>

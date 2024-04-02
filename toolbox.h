@@ -1,6 +1,9 @@
 #ifndef TOOLBOX_H
 #define TOOLBOX_H
-
+/*
+toolbox header for toolbox class
+By Kai-Chen Chiang,jinchao liang, Rishen Cao, Zelin Yi, Shuangji Li,Yuang sun
+*/
 #include <QWidget>
 #include "Model.h"
 #include <QVBoxLayout>

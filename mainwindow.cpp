@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QInputDialog>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
         model = new Model(64, 64, this);
     }
     pixelEditorView = new PixelEditorView(model, this,QColor(Qt::black),16,true);
-    pixelEditorView2 = new PixelEditorView(model, this,QColor(Qt::black),4,false);
+    preview = new PixelEditorView(model, this,QColor(Qt::black),4,false);
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);
@@ -26,8 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::LeftDockWidgetArea, toolboxDock);
 
     setCentralWidget(pixelEditorView);
-
-    frameBox = new FrameBox(model, this);
+    QTimer timer(this);
+    frameBox = new FrameBox(model, pixelEditorView, this);
     frameBoxDock = new QDockWidget(tr("Frames"), this);
     frameBoxDock -> setWidget(frameBox);
     addDockWidget(Qt::BottomDockWidgetArea, frameBoxDock);
@@ -36,6 +37,20 @@ MainWindow::MainWindow(QWidget *parent)
     // 连接信号和槽
     connectSignalsSlots();
 
+    QDockWidget *dockWidget = new QDockWidget(this);
+    dockWidget->setWindowTitle(tr("Canvas"));
+    dockWidget->setWidget(preview);
+    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
+    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+
+}
+MainWindow::~MainWindow() {
+    delete ui;
+}
+
+void MainWindow::connectSignalsSlots() {
+    connect(model, &Model::imageChanged, pixelEditorView, static_cast<void (QWidget::*)()>(&QWidget::update));
+    connect(model, &Model::imageChanged, preview, static_cast<void (QWidget::*)()>(&QWidget::update));
     connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
     connect(tool, &Toolbox::penModeChanged, pixelEditorView, &PixelEditorView::setPenMode);
 
@@ -50,22 +65,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(tool, &Toolbox::saveChanged, pixelEditorView, &PixelEditorView::saveClicked);
     connect(tool, &Toolbox::loadChanged, pixelEditorView, &PixelEditorView::loadClicked);
-
-
-    QDockWidget *dockWidget = new QDockWidget(this);
-    dockWidget->setWindowTitle(tr("Canvas"));
-    dockWidget->setWidget(pixelEditorView2);
-    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
-    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-
-}
-MainWindow::~MainWindow() {
-    delete ui;
-}
-
-void MainWindow::connectSignalsSlots() {
-    connect(model, &Model::imageChanged, pixelEditorView, static_cast<void (QWidget::*)()>(&QWidget::update));
-    connect(model, &Model::imageChanged, pixelEditorView2, static_cast<void (QWidget::*)()>(&QWidget::update));
 }
 
 

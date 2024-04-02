@@ -1,8 +1,8 @@
 #include "FrameBox.h"
 #include <QListWidgetItem>
 
-FrameBox::FrameBox(Model *model, QWidget *parent)
-    : QWidget(parent), model(model), nowEditing(0),listFrames({}),isDeleted({false}) {
+FrameBox::FrameBox(Model *model,PixelEditorView *view, QWidget *parent )
+    : QWidget(parent), model(model), listFrames({}),isDeleted({false}),nowEditing(0) ,redoLists({{}}),view(view) {
 
     layout = new QGridLayout(this);
     QToolButton *addButton = new QToolButton(this);
@@ -20,8 +20,6 @@ FrameBox::FrameBox(Model *model, QWidget *parent)
     connect(deleteButton, &QToolButton::clicked, this, &FrameBox::deleteFrame);
 
     QToolButton *firstFrame = new QToolButton(this);
-
-
     layout->addWidget(firstFrame, 0, 1, 1, 1, Qt::AlignLeft);
     firstFrame->setMaximumSize(150, 150);
     firstFrame->setStyleSheet("QToolButton { icon-size: 100px 100px; background-color: white; }");
@@ -35,7 +33,7 @@ FrameBox::FrameBox(Model *model, QWidget *parent)
 }
 
 void FrameBox::addFrame() {
-
+    redoLists.push_back(vector<Stroke*>{});
     QToolButton *newFrame = new QToolButton(this);
     int frameIndex = layout->columnCount() - 1;
     layout->addWidget(newFrame, 0, frameIndex +  1, 1, 1, Qt::AlignLeft); // Add to the new row, column 0
@@ -54,7 +52,8 @@ void FrameBox::addFrame() {
 
 void FrameBox::selectFrame(int frameIndex) {
     QImage nowImage = model->getCanvasImage();
-
+    redoLists[nowEditing] = view->getUndoList();
+    view->setUndoList(redoLists[frameIndex]);
     QLayoutItem* editingFrame = layout->itemAtPosition(0, nowEditing + 1);
     QToolButton *editingButton = qobject_cast<QToolButton*>(editingFrame->widget());
     QPixmap pixmap = QPixmap::fromImage(nowImage);
@@ -65,10 +64,8 @@ void FrameBox::selectFrame(int frameIndex) {
     QImage selectedImage = listFrames[frameIndex];
     model->canvasImage =selectedImage;
     nowEditing = frameIndex;
+
     emit callUpDate();
-
-
-
 }
 
 void FrameBox::deleteFrame() {

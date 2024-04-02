@@ -6,7 +6,7 @@ using std::min;
 using std::max;
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor,int scale,bool state)
-    : QWidget(parent), model(model),currentColor(currentColor), scale(scale),lastPixelX(-1), lastPixelY(-1)
+    : QWidget(parent), currentColor(currentColor),model(model), scale(scale),lastPixelX(-1), lastPixelY(-1)
 {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
@@ -329,6 +329,23 @@ void PixelEditorView::fill(int x, int y){
         fill(x, y-1);
     }
 }
+vector<Stroke*> PixelEditorView::getUndoList(){
+    return undoList;
+}
+void PixelEditorView::setUndoList(vector<Stroke*> list){
+    undoList = list;
+}
 void PixelEditorView::getUpdate(){
     update();
+}
+
+void PixelEditorView::frameClicked()
+{
+    resetRedoUndo();
+}
+
+void PixelEditorView::resetRedoUndo()
+{
+    redoList.clear();
+    // undoList.clear();
 }

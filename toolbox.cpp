@@ -92,11 +92,11 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
             emit penModeChanged(false);
         }
     });
-    connect(eraserButton, &QToolButton::toggled, this, [this, penButton, fill, line, rectangle](bool checked) {
+    connect(eraserButton, &QToolButton::toggled, this, [this, eraserButton, penButton, fill, line, rectangle](bool checked) {
         if (checked) {
             penButton->setChecked(false);
-            fill->setChecked(false);
             line->setChecked(false);
+            fill->setChecked(false);
             rectangle->setChecked(false);
             emit eraserModeChanged(true);
         } else {
@@ -115,16 +115,41 @@ Toolbox::Toolbox(Model *model, QWidget *parent) {
             emit fillModeChanged(false);
         }
     });
+    connect(line, &QToolButton::toggled, this, [this, eraserButton, penButton, fill, rectangle](bool checked) {
+        if (checked) {
+            eraserButton->setChecked(false);
+            penButton->setChecked(false);
+            rectangle->setChecked(false);
+            fill->setChecked(false);
+            emit lineModeChanged(true);
+
+        } else {
+            emit lineModeChanged(false);
+        }
+    });
+    connect(rectangle, &QToolButton::toggled, this, [this, eraserButton, penButton, fill, line](bool checked) {
+        if (checked) {
+            eraserButton->setChecked(false);
+            penButton->setChecked(false);
+            line->setChecked(false);
+            fill->setChecked(false);
+            emit rectangleModeChanged(true);
+
+        } else {
+            emit rectangleModeChanged(false);
+        }
+    });
 
     connect(color, &QToolButton::clicked, this, [this, eraserButton, penButton, line, rectangle]() {
         QColor selectedColor = QColorDialog::getColor(Qt::black, this, "Select Color");
         if (selectedColor.isValid()) {
-            eraserButton->setChecked(false);
-            penButton->setChecked(true);
-            line->setChecked(false);
-            rectangle->setChecked(false);
-            emit eraserModeChanged(false);
-            emit penModeChanged(true);
+            // eraserButton->setChecked(false);
+            // penButton->setChecked(true);
+            // line->setChecked(false);
+            // rectangle->setChecked(false);
+            // // other function also want to change color
+            // emit eraserModeChanged(false);
+            // emit penModeChanged(true);
             emit colorChanged(selectedColor);
         }
     });

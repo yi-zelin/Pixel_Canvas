@@ -40,9 +40,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tool, &Toolbox::penModeChanged, pixelEditorView, &PixelEditorView::setPenMode);
 
     connect(tool, &Toolbox::fillModeChanged, pixelEditorView, &PixelEditorView::setFillMode);
+    connect(tool, &Toolbox::lineModeChanged, pixelEditorView, &PixelEditorView::setLineMode);
+    connect(tool, &Toolbox::rectangleModeChanged, pixelEditorView, &PixelEditorView::setRectangleMode);
+
     connect(tool, &Toolbox::undoChanged, pixelEditorView, &PixelEditorView::setUndo);
     connect(tool, &Toolbox::redoChanged, pixelEditorView, &PixelEditorView::setRedo);
+
     connect(tool, &Toolbox::colorChanged, pixelEditorView, &PixelEditorView::setCurrentColor);
+
     connect(tool, &Toolbox::saveChanged, pixelEditorView, &PixelEditorView::saveClicked);
     connect(tool, &Toolbox::loadChanged, pixelEditorView, &PixelEditorView::loadClicked);
 

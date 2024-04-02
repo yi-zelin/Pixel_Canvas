@@ -19,8 +19,6 @@ signals:
     void eraserModeChanged(bool active);
     void penModeChanged(bool active);
     void fillModeChanged(bool active);
-    void lineModeChanged(bool active);
-    void rectangleModeChanged(bool active);
     void redoChanged();
     void undoChanged();
     void colorChanged(const QColor &Color);

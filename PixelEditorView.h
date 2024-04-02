@@ -1,3 +1,8 @@
+/*
+ *The header files for pixelEditorView.cpp
+ *Author:Kai-chen Chiang, Rishen Cao, Yuang Sun, JinChao Liang, Shuangji Li, Yize Lin
+*/
+
 #ifndef PIXELEDITORVIEW_H
 #define PIXELEDITORVIEW_H
 
@@ -21,26 +26,17 @@ public:
     QColor currentColor;
     bool isEraserMode;
     bool isFillMode=false;
-    bool lineMode = false;
-    bool rectangleMode = false;
-    bool squareMode = false;
-    vector<Stroke*> getUndoList();
-    void setUndoList(vector<Stroke*>);
     ~PixelEditorView() override;
 
 public slots:
     void setEraserMode(bool active);
     void setPenMode(bool active);
     void setFillMode(bool active);
-    void setLineMode(bool active);
-    void setRectangleMode(bool active);
     void setRedo();
     void setUndo();
     void setCurrentColor(const QColor &color);
     void saveClicked();
     void loadClicked();
-    void getUpdate();
-    void frameClicked();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -50,7 +46,6 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void undoClicked();
     void redoClicked();
-    void resetRedoUndo();
 
 private:
     Model *model;
@@ -65,6 +60,7 @@ private:
     QJsonDocument convertIntoJson( QImage image );
     void loadJsonFromFile();
     void fill(int x, int y);
+    bool state;
 };
 
-#endif
+#endif // PIXELEDITORVIEW_H

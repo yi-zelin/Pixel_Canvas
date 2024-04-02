@@ -3,21 +3,20 @@
 
 #include <QWidget>
 #include <QListWidget>
+
 #include <QVBoxLayout>
 #include <QToolButton>
 #include "model.h"
-#include "stroke.h"
-#include "PixelEditorView.h"
+
 class FrameBox : public QWidget {
     Q_OBJECT
 
 public:
-    explicit FrameBox(Model *model, PixelEditorView *view, QWidget *parent = nullptr);
+    explicit FrameBox(Model *model, QWidget *parent = nullptr);
     ~FrameBox() override;
 
 signals:
-    void callUpDate();
-    void undoReset();
+    void frameSelected(int frameIndex);
 
 public slots:
     void addFrame();
@@ -26,17 +25,11 @@ public slots:
     void previewFrame();
 
 private:
-    void frameSelected(int frameIndex);
     QListWidget *listWidget;
     Model *model;
-    QVector<QImage> listFrames;
-    QVector<QToolButton> selectFrames;
-    QVector<vector<Stroke*>> redoLists;
-    QVector<bool> isDeleted;
+    QList<QImage> listFrames;
     int nowEditing;
     QGridLayout *layout;
-    int frameCount;
-    PixelEditorView *view;
 };
 
 #endif // FRAMEBOX_H

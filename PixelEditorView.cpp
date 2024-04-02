@@ -4,7 +4,7 @@
 
 
 PixelEditorView::PixelEditorView(Model *model, QWidget *parent,QColor currentColor,int scale,bool state)
-    : QWidget(parent), model(model),currentColor(currentColor), scale(scale),lastPixelX(-1), lastPixelY(-1)
+    : QWidget(parent), model(model),currentColor(currentColor), scale(scale),lastPixelX(-1), lastPixelY(-1), state(state)
 {
     setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     setMinimumSize(model->getCanvasImage().size());
@@ -19,9 +19,9 @@ void PixelEditorView::paintEvent(QPaintEvent *event) {
 
     const int scaleLessThan4by4 = 100;
 
-    if (image.width() < 5 && image.height() < 5) {
+    if (image.width() < 5 && image.height() < 5 /*&& state*/) {
         scale = scaleLessThan4by4;
-    } else {
+    } else if(state){
         scale = qMin(width() / image.width(), height() / image.height());
         scale = qMax(scale, 10);
     }
@@ -107,6 +107,7 @@ void PixelEditorView::mouseMoveEvent(QMouseEvent *event) {
 
 void PixelEditorView::mouseReleaseEvent(QMouseEvent* event)
 {
+    Q_UNUSED(event);
     if (isDrawingEnabled){
         undoList.push_back(currentStroke);
     }

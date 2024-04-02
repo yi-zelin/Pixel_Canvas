@@ -18,6 +18,13 @@ MainWindow::MainWindow(QWidget *parent)
     }
     pixelEditorView = new PixelEditorView(model, this,QColor(Qt::black),16,true);
     pixelEditorView2 = new PixelEditorView(model, this,QColor(Qt::black),4,false);
+    QDockWidget *dockWidget = new QDockWidget(this);
+    dockWidget->setWindowTitle(tr("Preview"));
+    dockWidget->setWidget(pixelEditorView2);
+    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
+    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    pixelEditorView2->setFixedSize(256, 256);
+
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);
@@ -45,14 +52,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tool, &Toolbox::colorChanged, pixelEditorView, &PixelEditorView::setCurrentColor);
     connect(tool, &Toolbox::saveChanged, pixelEditorView, &PixelEditorView::saveClicked);
     connect(tool, &Toolbox::loadChanged, pixelEditorView, &PixelEditorView::loadClicked);
-
-
-    QDockWidget *dockWidget = new QDockWidget(this);
-    dockWidget->setWindowTitle(tr("Canvas"));
-    dockWidget->setWidget(pixelEditorView2);
-    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
-    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-
 }
 MainWindow::~MainWindow() {
     delete ui;

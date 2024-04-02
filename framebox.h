@@ -20,15 +20,15 @@ public:
 signals:
     void callUpDate();
     void undoReset();
-    // void setPrevFps();
-    // void setPreviewTime();
+
 
 public slots:
     void addFrame();
     void deleteFrame();
     void previewFrame();
     void selectFrame(int frameIndex);
-
+    void setPrevFps();
+    void setPreviewTime();
 
 private:
     void frameSelected(int frameIndex);

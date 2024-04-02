@@ -38,7 +38,7 @@ FrameBox::FrameBox(Model *model,PixelEditorView *view, QWidget *parent )
     QLineEdit *previewFPS = new QLineEdit(this);
     previewFPS -> setPlaceholderText("Enter FPS");
     layout->addWidget(previewFPS, 3, 0, 1, 1, Qt::AlignLeft);
-    //connect(previewFPS, &QLineEdit::returnPressed, this, &FrameBox::setPrevFps);
+    connect(previewFPS, &QLineEdit::returnPressed, this, &FrameBox::setPrevFps);
 
     QLineEdit *previewRep = new QLineEdit(this);
     layout->addWidget(previewRep, 4, 0, 1, 1, Qt::AlignLeft);
@@ -112,13 +112,29 @@ void FrameBox::deleteFrame() {
     }
 
 }
-// void FrameBox::setPrevFps(){
+void FrameBox::setPrevFps(){
+    QLineEdit *FPS = qobject_cast<QLineEdit*>(layout->itemAtPosition(3, 0)->widget());
+    QString text = FPS->text();
+    bool ok;
+    int speed = text.toInt(&ok);
+    if (ok) {
+        previewSpeed = speed;
+    } else {
+        FPS->setText("please Enter an int");
+    }
+}
 
-// }
-
-// void FrameBox::setPreviewTime(){
-
-// }
+void FrameBox::setPreviewTime(){
+    QLineEdit *repeat = qobject_cast<QLineEdit*>(layout->itemAtPosition(4, 0)->widget());
+    QString text = repeat->text();
+    bool ok;
+    int time = text.toInt(&ok);
+    if (ok) {
+        previewTime = time;
+    } else {
+        repeat->setText("please Enter an int");
+    }
+}
 void FrameBox::previewFrame() {
     int speed = 1000 / previewSpeed;
     int nowSelect = 0;

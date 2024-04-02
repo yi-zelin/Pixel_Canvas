@@ -35,6 +35,17 @@ FrameBox::FrameBox(Model *model,PixelEditorView *view, QWidget *parent )
         this->selectFrame(0);
     });
 
+    QLineEdit *previewFPS = new QLineEdit(this);
+    previewFPS -> setPlaceholderText("Enter FPS");
+    layout->addWidget(previewFPS, 3, 0, 1, 1, Qt::AlignLeft);
+    //connect(previewFPS, &QLineEdit::returnPressed, this, &FrameBox::setPrevFps);
+
+    QLineEdit *previewRep = new QLineEdit(this);
+    layout->addWidget(previewRep, 4, 0, 1, 1, Qt::AlignLeft);
+    previewRep -> setPlaceholderText("Enter repeat time");
+
+
+
     QImage whiteImage (model->getSize().height(), model->getSize().height(), QImage::Format_RGB32);
     listFrames.push_back(whiteImage);
     frameCount++;
@@ -101,6 +112,13 @@ void FrameBox::deleteFrame() {
     }
 
 }
+// void FrameBox::setPrevFps(){
+
+// }
+
+// void FrameBox::setPreviewTime(){
+
+// }
 void FrameBox::previewFrame() {
     int speed = 1000 / previewSpeed;
     int nowSelect = 0;

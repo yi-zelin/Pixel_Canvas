@@ -9,6 +9,7 @@
 #include "stroke.h"
 #include <QTimer>
 #include "PixelEditorView.h"
+#include <QLineEdit>
 class FrameBox : public QWidget {
     Q_OBJECT
 
@@ -19,12 +20,15 @@ public:
 signals:
     void callUpDate();
     void undoReset();
+    // void setPrevFps();
+    // void setPreviewTime();
 
 public slots:
     void addFrame();
     void deleteFrame();
     void previewFrame();
     void selectFrame(int frameIndex);
+
 
 private:
     void frameSelected(int frameIndex);
@@ -40,6 +44,7 @@ private:
     PixelEditorView *view;
     int previewSpeed;
     int previewTime;
+
 };
 
 #endif // FRAMEBOX_H

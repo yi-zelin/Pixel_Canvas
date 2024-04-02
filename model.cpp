@@ -28,3 +28,6 @@ void Model::clearImage() {
     emit imageChanged(); // 发出图像更改的信号
 }
 
+QSize Model::getSize(){
+    return canvasImage.size();
+}

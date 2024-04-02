@@ -22,7 +22,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     PixelEditorView *pixelEditorView;
-    PixelEditorView *pixelEditorView2;
+    PixelEditorView *preview;
     Toolbox *tool;
     Model *model;
     Model *model2;

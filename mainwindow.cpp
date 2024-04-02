@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QInputDialog>
-#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,7 +17,14 @@ MainWindow::MainWindow(QWidget *parent)
         model = new Model(64, 64, this);
     }
     pixelEditorView = new PixelEditorView(model, this,QColor(Qt::black),16,true);
-    preview = new PixelEditorView(model, this,QColor(Qt::black),4,false);
+    pixelEditorView2 = new PixelEditorView(model, this,QColor(Qt::black),4,false);
+    QDockWidget *dockWidget = new QDockWidget(this);
+    dockWidget->setWindowTitle(tr("Preview"));
+    dockWidget->setWidget(pixelEditorView2);
+    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
+    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    pixelEditorView2->setFixedSize(256, 256);
+
     tool = new Toolbox(model, this);
     toolboxDock = new QDockWidget(tr("Tools"), this);
     toolboxDock->setWidget(tool);
@@ -27,22 +33,25 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::LeftDockWidgetArea, toolboxDock);
 
     setCentralWidget(pixelEditorView);
-    QTimer timer(this);
-    frameBox = new FrameBox(model, pixelEditorView, this);
+
+    frameBox = new FrameBox(model, this);
     frameBoxDock = new QDockWidget(tr("Frames"), this);
     frameBoxDock -> setWidget(frameBox);
     addDockWidget(Qt::BottomDockWidgetArea, frameBoxDock);
     //connect(frameBox, &FrameBox::frameSelected, this, &YourMainWindowClass::onFrameSelected);
-    connect(frameBox, &FrameBox::callUpDate, pixelEditorView, &PixelEditorView::getUpdate);
+
     // 连接信号和槽
     connectSignalsSlots();
 
-    QDockWidget *dockWidget = new QDockWidget(this);
-    dockWidget->setWindowTitle(tr("Canvas"));
-    dockWidget->setWidget(preview);
-    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
-    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
+    connect(tool, &Toolbox::penModeChanged, pixelEditorView, &PixelEditorView::setPenMode);
 
+    connect(tool, &Toolbox::fillModeChanged, pixelEditorView, &PixelEditorView::setFillMode);
+    connect(tool, &Toolbox::undoChanged, pixelEditorView, &PixelEditorView::setUndo);
+    connect(tool, &Toolbox::redoChanged, pixelEditorView, &PixelEditorView::setRedo);
+    connect(tool, &Toolbox::colorChanged, pixelEditorView, &PixelEditorView::setCurrentColor);
+    connect(tool, &Toolbox::saveChanged, pixelEditorView, &PixelEditorView::saveClicked);
+    connect(tool, &Toolbox::loadChanged, pixelEditorView, &PixelEditorView::loadClicked);
 }
 MainWindow::~MainWindow() {
     delete ui;
@@ -50,21 +59,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::connectSignalsSlots() {
     connect(model, &Model::imageChanged, pixelEditorView, static_cast<void (QWidget::*)()>(&QWidget::update));
-    connect(model, &Model::imageChanged, preview, static_cast<void (QWidget::*)()>(&QWidget::update));
-    connect(tool, &Toolbox::eraserModeChanged, pixelEditorView, &PixelEditorView::setEraserMode);
-    connect(tool, &Toolbox::penModeChanged, pixelEditorView, &PixelEditorView::setPenMode);
-
-    connect(tool, &Toolbox::fillModeChanged, pixelEditorView, &PixelEditorView::setFillMode);
-    connect(tool, &Toolbox::lineModeChanged, pixelEditorView, &PixelEditorView::setLineMode);
-    connect(tool, &Toolbox::rectangleModeChanged, pixelEditorView, &PixelEditorView::setRectangleMode);
-
-    connect(tool, &Toolbox::undoChanged, pixelEditorView, &PixelEditorView::setUndo);
-    connect(tool, &Toolbox::redoChanged, pixelEditorView, &PixelEditorView::setRedo);
-
-    connect(tool, &Toolbox::colorChanged, pixelEditorView, &PixelEditorView::setCurrentColor);
-
-    connect(tool, &Toolbox::saveChanged, pixelEditorView, &PixelEditorView::saveClicked);
-    connect(tool, &Toolbox::loadChanged, pixelEditorView, &PixelEditorView::loadClicked);
+    connect(model, &Model::imageChanged, pixelEditorView2, static_cast<void (QWidget::*)()>(&QWidget::update));
 }
 
 

@@ -15,13 +15,11 @@ public:
     const QImage& getCanvasImage() const;
     void clearImage();
     QImage canvasImage;
-    QSize getSize();
 signals:
     void imageChanged();
 
 protected:
 
 };
-
 
 #endif // MODEL_H
